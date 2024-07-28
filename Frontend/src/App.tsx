@@ -1,35 +1,209 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useRef } from "react";
+import Navbar from "./components/Navbar";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Check, ChevronsUpDown } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
-function App() {
-  const [count, setCount] = useState(0)
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Textarea } from "./components/ui/textarea";
 
+const frameworks = [
+  {
+    value: "horror",
+    label: "Horror",
+  },
+  {
+    value: "action",
+    label: "Action",
+  },
+  {
+    value: "adventure",
+    label: "Adventure",
+  },
+  {
+    value: "fantasy",
+    label: "Fantasy",
+  },
+  {
+    value: "science_fiction",
+    label: "Sci-fi",
+  },
+  {
+    value: "mystery",
+    label: "Mystery",
+  },
+  {
+    value: "romance",
+    label: "Romance",
+  },
+  {
+    value: "comedy",
+    label: "Comedy",
+  },
+  {
+    value: "drama",
+    label: "Drama",
+  },
+  {
+    value: "thriller",
+    label: "Thriller",
+  },
+
+  {
+    value: "crime",
+    label: "Crime",
+  },
+] as const;
+
+const FormSchema = z.object({
+  genre: z.string({
+    required_error: "Please select a genre.",
+  }),
+  userdata: z.string(),
+});
+
+const App = () => {
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
+  });
+
+  function onSubmit(data: z.infer<typeof FormSchema>) {
+    console.log(data);
+  }
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="w-full border-2 border-black min-h-screen flex flex-col items-center">
+      <Navbar />
+      <div className="rounded-lg w-[40rem]">
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="flex flex-col rounded-lg border border-neutral-300 shadow-xl p-4 "
+          >
+            <FormField
+              control={form.control}
+              name="userdata"
+              render={() => (
+                <FormItem>
+                  <div className=" w-full ">
+                    <Textarea
+                      className="py-2 pr-2 bg-transparent w-full outline-none resize-none border-none"
+                      placeholder="Ask anything"
+                      onChange={(event) => {
+                        form.setValue("userdata", event.target.value);
+                      }}
+                    />
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <div className="flex justify-between items-center pt-4">
+              <FormField
+                control={form.control}
+                name="genre"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant="secondary"
+                            role="combobox"
+                            className={cn(
+                              "w-[200px] justify-between",
+                              !field.value && "text-muted-foreground"
+                            )}
+                          >
+                            {field.value
+                              ? frameworks.find(
+                                  (framework) => framework.value === field.value
+                                )?.label
+                              : "Select genre"}
+                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-[200px] mt-2 p-0 bg-white">
+                        <Command>
+                          <CommandInput placeholder="Search genre..." />
+                          <CommandList>
+                            <CommandEmpty>No genre found.</CommandEmpty>
+                            <CommandGroup>
+                              {frameworks.map((framework) => (
+                                <CommandItem
+                                  value={framework.label}
+                                  key={framework.value}
+                                  onSelect={() => {
+                                    form.setValue("genre", framework.value);
+                                  }}
+                                >
+                                  <Check
+                                    className={cn(
+                                      "mr-2 h-4 w-4",
+                                      framework.value === field.value
+                                        ? "opacity-100"
+                                        : "opacity-0"
+                                    )}
+                                  />
+                                  {framework.label}
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button type="submit" className="px-0">
+                <div className="bg-neutral-200 p-2 rounded-lg cursor-pointer">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="size-6 "
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5"
+                    />
+                  </svg>
+                </div>
+              </Button>
+            </div>
+          </form>
+        </Form>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    </div>
+  );
+};
 
-export default App
+export default App;
