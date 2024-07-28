@@ -1,4 +1,3 @@
-import { useRef } from "react";
 import Navbar from "./components/Navbar";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Check, ChevronsUpDown } from "lucide-react";
@@ -20,7 +19,6 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import {
@@ -94,7 +92,7 @@ const App = () => {
     console.log(data);
   }
   return (
-    <div className="w-full border-2 border-black min-h-screen flex flex-col items-center">
+    <div className="w-full font-sans border-2 border-black min-h-screen flex flex-col items-center">
       <Navbar />
       <div className="rounded-lg w-[40rem]">
         <Form {...form}>
@@ -109,8 +107,8 @@ const App = () => {
                 <FormItem>
                   <div className=" w-full ">
                     <Textarea
-                      className="py-2 pr-2 bg-transparent w-full outline-none resize-none border-none"
-                      placeholder="Ask anything"
+                      className="py-2 pr-2 bg-transparent w-full outline-none resize-none border-none placeholder:text-neutral-400 font-medium"
+                      placeholder="Ask anything..."
                       onChange={(event) => {
                         form.setValue("userdata", event.target.value);
                       }}
@@ -125,7 +123,7 @@ const App = () => {
                 control={form.control}
                 name="genre"
                 render={({ field }) => (
-                  <FormItem className="flex flex-col">
+                  <FormItem className="flex flex-col border border-neutral-300 rounded-lg">
                     <Popover>
                       <PopoverTrigger asChild>
                         <FormControl>
