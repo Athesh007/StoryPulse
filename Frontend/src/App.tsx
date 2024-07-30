@@ -114,6 +114,8 @@ const App = () => {
         "Survivalist encounters the unexplainable in the Amazon.",
     },
   ]);
+
+  const [selected, setSelected] = useState<string[]>(["story1", "story2"]);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
@@ -241,7 +243,12 @@ const App = () => {
           <div className="flex flex-col gap-6 w-[70%] mx-auto">
             {data.map((individual_data, index: number) => (
               <div className="text-xl flex justify-between gap-8" key={index}>
-                <div className="flex flex-col p-4 gap-2 border border-neutral-500 rounded-lg">
+                <div
+                  className={`flex flex-col shadow-xl p-4 gap-2 border border-neutral-500 rounded-lg ${
+                    selected[index] === "story2" && "bg-neutral-400"
+                  }`}
+                  onClick={() => setSelected((prev) => [...prev, "story1"])}
+                >
                   <div className="text-xl font-semibold">
                     {individual_data.story1_short_form}
                   </div>
@@ -249,7 +256,12 @@ const App = () => {
                     {individual_data.story1}
                   </div>
                 </div>
-                <div className="flex flex-col p-4 gap-2 border border-neutral-700 rounded-lg">
+                <div
+                  className={`flex flex-col shadow-xl p-4 gap-2 border border-neutral-500 rounded-lg ${
+                    selected[index] === "story1" && "bg-neutral-400"
+                  }`}
+                  onClick={() => setSelected((prev) => [...prev, "story2"])}
+                >
                   <div className="text-xl font-semibold">
                     {individual_data.story2_short_form}
                   </div>
