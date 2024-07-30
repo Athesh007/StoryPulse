@@ -85,18 +85,33 @@ const FormSchema = z.object({
 });
 
 const App = () => {
-  const [data, setData] = useState<{ story1: string; story2: string }[]>([
+  const [data, setData] = useState<
+    {
+      story1: string;
+      story2: string;
+      story1_short_form: string;
+      story2_short_form: string;
+    }[]
+  >([
     {
       story1:
-        "The canopy was so thick, the jungle floor was cloaked in perpetual twilight. A chill wind whispered through the trees, carrying with it the distant cries of unseen creatures. The man, a solitary figure in this labyrinth of green, felt a creeping dread. His compass spun wildly, the needle dancing in a frenzy, as if mocking his attempts at orientation. A twig snapped behind him, and his heart pounded in his chest. He whirled around, his eyes straining to pierce the gloom. Nothing. Just the endless, watchful eyes of the jungle.",
+        "A man is alone in the heart of an impenetrable jungle. The canopy is so thick that even the moon's light struggles to pierce through, casting eerie shadows that dance and distort in the undergrowth. His supplies are dwindling, and a growing sense of paranoia gnaws at him. Strange noises echo through the dense foliage, and as night descends, a blood-curdling scream shatters the silence. Fear, hunger, and the unknown conspire to push him to the brink of sanity.",
+      story1_short_form:
+        "Lost and alone in the jungle, paranoia and terror creep in.",
       story2:
-        "The air was thick with the scent of decay, a sickly sweet perfume that clung to the man's clothes. Strange, guttural sounds echoed through the undergrowth, a cacophony that chilled him to the bone. A colossal tree stood in the center of a small clearing, its gnarled branches reaching towards the sky like skeletal fingers. As he drew closer, he noticed peculiar markings on the tree's bark - symbols that seemed to writhe and change shape before his eyes. An inexplicable urge pulled him towards the tree, as if an invisible force was beckoning him closer.",
+        "An experienced survivalist, Daniel, ventures into the heart of the Amazon rainforest. Armed with state-of-the-art equipment and years of training, he's prepared for the challenges that lie ahead. However, as he delves deeper, he encounters unexplainable phenomena. Ancient, whispered legends of the jungle begin to haunt his dreams. A creature, unseen but felt, stalks him through the undergrowth. His scientific mind clashes with the growing belief in the supernatural as he fights to survive.",
+      story2_short_form:
+        "Survivalist encounters the unexplainable in the Amazon.",
     },
     {
       story1:
-        "The canopy was so thick, the jungle floor was cloaked in perpetual twilight. A chill wind whispered through the trees, carrying with it the distant cries of unseen creatures. The man, a solitary figure in this labyrinth of green, felt a creeping dread. His compass spun wildly, the needle dancing in a frenzy, as if mocking his attempts at orientation. A twig snapped behind him, and his heart pounded in his chest. He whirled around, his eyes straining to pierce the gloom. Nothing. Just the endless, watchful eyes of the jungle.",
+        "A man is alone in the heart of an impenetrable jungle. The canopy is so thick that even the moon's light struggles to pierce through, casting eerie shadows that dance and distort in the undergrowth. His supplies are dwindling, and a growing sense of paranoia gnaws at him. Strange noises echo through the dense foliage, and as night descends, a blood-curdling scream shatters the silence. Fear, hunger, and the unknown conspire to push him to the brink of sanity.",
+      story1_short_form:
+        "Lost and alone in the jungle, paranoia and terror creep in.",
       story2:
-        "The air was thick with the scent of decay, a sickly sweet perfume that clung to the man's clothes. Strange, guttural sounds echoed through the undergrowth, a cacophony that chilled him to the bone. A colossal tree stood in the center of a small clearing, its gnarled branches reaching towards the sky like skeletal fingers. As he drew closer, he noticed peculiar markings on the tree's bark - symbols that seemed to writhe and change shape before his eyes. An inexplicable urge pulled him towards the tree, as if an invisible force was beckoning him closer.",
+        "An experienced survivalist, Daniel, ventures into the heart of the Amazon rainforest. Armed with state-of-the-art equipment and years of training, he's prepared for the challenges that lie ahead. However, as he delves deeper, he encounters unexplainable phenomena. Ancient, whispered legends of the jungle begin to haunt his dreams. A creature, unseen but felt, stalks him through the undergrowth. His scientific mind clashes with the growing belief in the supernatural as he fights to survive.",
+      story2_short_form:
+        "Survivalist encounters the unexplainable in the Amazon.",
     },
   ]);
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -109,9 +124,7 @@ const App = () => {
     const b = { test1: "left_story2", test2: "right_story2" };
     setData((prev) => [...prev, a, b]);
   }
-  {
-    console.log(`Data:${data}\n Length:${data.length}`);
-  }
+
   return (
     <div className="w-full font-sans border-2 border-black min-h-screen flex flex-col items-center">
       <Navbar />
@@ -225,14 +238,25 @@ const App = () => {
             </Form>
           </div>
         ) : (
-          <div className="flex flex-col gap-6 border-2 border-black w-[70%] mx-auto">
+          <div className="flex flex-col gap-6 w-[70%] mx-auto">
             {data.map((individual_data, index: number) => (
-              <div
-                className="text-xl font-semibold flex justify-between border-2 border-red-500 gap-8"
-                key={index}
-              >
-                <div>{individual_data.story1}</div>
-                <div> {individual_data.story2}</div>
+              <div className="text-xl flex justify-between gap-8" key={index}>
+                <div className="flex flex-col p-4 gap-2 border border-neutral-500 rounded-lg">
+                  <div className="text-xl font-semibold">
+                    {individual_data.story1_short_form}
+                  </div>
+                  <div className="text-justify font-normal">
+                    {individual_data.story1}
+                  </div>
+                </div>
+                <div className="flex flex-col p-4 gap-2 border border-neutral-700 rounded-lg">
+                  <div className="text-xl font-semibold">
+                    {individual_data.story2_short_form}
+                  </div>
+                  <div className="text-justify font-normal">
+                    {individual_data.story2}
+                  </div>
+                </div>
               </div>
             ))}
           </div>
