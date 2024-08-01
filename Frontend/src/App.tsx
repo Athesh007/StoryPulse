@@ -27,7 +27,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Textarea } from "./components/ui/textarea";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const frameworks = [
   {
@@ -101,18 +101,26 @@ const App = () => {
       "Survivalist encounters the unexplainable in the Amazon.",
   });
 
-  const [chat, setChat] = useState(["dsa"]);
+  const [chat, setChat] = useState([{}]);
   const [selected, setSelected] = useState<string[]>(["story1", "story2"]);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
-
+  const handleClick = (event, choice: number) => {
+    event?.preventDefault();
+    const data_to_insert =
+      choice === 0
+        ? { story: data.story1, short_form: data.story1_short_form }
+        : { story: data.story2, short_form: data.story2_short_form };
+    setChat((prev) => [...prev, data_to_insert]);
+  };
   function onSubmit(data: z.infer<typeof FormSchema>) {
     console.log(data);
-    const a = { test1: "left_story1", test2: "right_story1" };
-    const b = { test1: "left_story2", test2: "right_story2" };
-    setData((prev) => [...prev, a, b]);
   }
+
+  useEffect(() => {
+    console.log(chat);
+  }, [chat]);
 
   return (
     <div className="w-full font-sans border-2 border-black min-h-screen flex flex-col items-center">
@@ -230,7 +238,10 @@ const App = () => {
           <div className="flex flex-col gap-6 w-[70%] mx-auto pt-10">
             {data && (
               <div className="text-xl flex justify-between gap-8">
-                <div className="text-justify">
+                <div
+                  className="text-justify"
+                  onClick={(e) => handleClick(e, 0)}
+                >
                   <div className="p-4 border-r border-t border-l rounded-t-lg border-neutral-600 ">
                     {data.story1_short_form}
                   </div>
@@ -238,7 +249,10 @@ const App = () => {
                     {data.story1}
                   </div>
                 </div>
-                <div className="text-justify ">
+                <div
+                  className="text-justify"
+                  onClick={(e) => handleClick(e, 1)}
+                >
                   <div className="p-4 border-r border-t border-l rounded-t-lg border-neutral-600 ">
                     {data.story2_short_form}
                   </div>
