@@ -85,36 +85,23 @@ const FormSchema = z.object({
 });
 
 const App = () => {
-  const [data, setData] = useState<
-    {
-      story1: string;
-      story2: string;
-      story1_short_form: string;
-      story2_short_form: string;
-    }[]
-  >([
-    {
-      story1:
-        "A man is alone in the heart of an impenetrable jungle. The canopy is so thick that even the moon's light struggles to pierce through, casting eerie shadows that dance and distort in the undergrowth. His supplies are dwindling, and a growing sense of paranoia gnaws at him. Strange noises echo through the dense foliage, and as night descends, a blood-curdling scream shatters the silence. Fear, hunger, and the unknown conspire to push him to the brink of sanity.",
-      story1_short_form:
-        "Lost and alone in the jungle, paranoia and terror creep in.",
-      story2:
-        "An experienced survivalist, Daniel, ventures into the heart of the Amazon rainforest. Armed with state-of-the-art equipment and years of training, he's prepared for the challenges that lie ahead. However, as he delves deeper, he encounters unexplainable phenomena. Ancient, whispered legends of the jungle begin to haunt his dreams. A creature, unseen but felt, stalks him through the undergrowth. His scientific mind clashes with the growing belief in the supernatural as he fights to survive.",
-      story2_short_form:
-        "Survivalist encounters the unexplainable in the Amazon.",
-    },
-    {
-      story1:
-        "A man is alone in the heart of an impenetrable jungle. The canopy is so thick that even the moon's light struggles to pierce through, casting eerie shadows that dance and distort in the undergrowth. His supplies are dwindling, and a growing sense of paranoia gnaws at him. Strange noises echo through the dense foliage, and as night descends, a blood-curdling scream shatters the silence. Fear, hunger, and the unknown conspire to push him to the brink of sanity.",
-      story1_short_form:
-        "Lost and alone in the jungle, paranoia and terror creep in.",
-      story2:
-        "An experienced survivalist, Daniel, ventures into the heart of the Amazon rainforest. Armed with state-of-the-art equipment and years of training, he's prepared for the challenges that lie ahead. However, as he delves deeper, he encounters unexplainable phenomena. Ancient, whispered legends of the jungle begin to haunt his dreams. A creature, unseen but felt, stalks him through the undergrowth. His scientific mind clashes with the growing belief in the supernatural as he fights to survive.",
-      story2_short_form:
-        "Survivalist encounters the unexplainable in the Amazon.",
-    },
-  ]);
+  const [data, setData] = useState<{
+    story1: string;
+    story2: string;
+    story1_short_form: string;
+    story2_short_form: string;
+  }>({
+    story1:
+      "A man is alone in the heart of an impenetrable jungle. The canopy is so thick that even the moon's light struggles to pierce through, casting eerie shadows that dance and distort in the undergrowth. His supplies are dwindling, and a growing sense of paranoia gnaws at him. Strange noises echo through the dense foliage, and as night descends, a blood-curdling scream shatters the silence. Fear, hunger, and the unknown conspire to push him to the brink of sanity.",
+    story1_short_form:
+      "Lost and alone in the jungle, paranoia and terror creep in.",
+    story2:
+      "An experienced survivalist, Daniel, ventures into the heart of the Amazon rainforest. Armed with state-of-the-art equipment and years of training, he's prepared for the challenges that lie ahead. However, as he delves deeper, he encounters unexplainable phenomena. Ancient, whispered legends of the jungle begin to haunt his dreams. A creature, unseen but felt, stalks him through the undergrowth. His scientific mind clashes with the growing belief in the supernatural as he fights to survive.",
+    story2_short_form:
+      "Survivalist encounters the unexplainable in the Amazon.",
+  });
 
+  const [chat, setChat] = useState(["dsa"]);
   const [selected, setSelected] = useState<string[]>(["story1", "story2"]);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -131,7 +118,7 @@ const App = () => {
     <div className="w-full font-sans border-2 border-black min-h-screen flex flex-col items-center">
       <Navbar />
       <div className="w-full">
-        {data.length === 0 ? (
+        {chat.length === 0 ? (
           <div className="rounded-lg w-[40rem]">
             <Form {...form}>
               <form
@@ -240,37 +227,27 @@ const App = () => {
             </Form>
           </div>
         ) : (
-          <div className="flex flex-col gap-6 w-[70%] mx-auto">
-            {data.map((individual_data, index: number) => (
-              <div className="text-xl flex justify-between gap-8" key={index}>
-                <div
-                  className={`flex flex-col shadow-xl p-4 gap-2 border border-neutral-500 rounded-lg ${
-                    selected[index] === "story2" && "bg-neutral-400"
-                  }`}
-                  onClick={() => setSelected((prev) => [...prev, "story1"])}
-                >
-                  <div className="text-xl font-semibold">
-                    {individual_data.story1_short_form}
+          <div className="flex flex-col gap-6 w-[70%] mx-auto pt-10">
+            {data && (
+              <div className="text-xl flex justify-between gap-8">
+                <div className="text-justify">
+                  <div className="p-4 border-r border-t border-l rounded-t-lg border-neutral-600 ">
+                    {data.story1_short_form}
                   </div>
-                  <div className="text-justify font-normal">
-                    {individual_data.story1}
+                  <div className="px-4 pb-4 border-l border-r border-b rounded-b-lg border-neutral-500 shadow-xl">
+                    {data.story1}
                   </div>
                 </div>
-                <div
-                  className={`flex flex-col shadow-xl p-4 gap-2 border border-neutral-500 rounded-lg ${
-                    selected[index] === "story1" && "bg-neutral-400"
-                  }`}
-                  onClick={() => setSelected((prev) => [...prev, "story2"])}
-                >
-                  <div className="text-xl font-semibold">
-                    {individual_data.story2_short_form}
+                <div className="text-justify ">
+                  <div className="p-4 border-r border-t border-l rounded-t-lg border-neutral-600 ">
+                    {data.story2_short_form}
                   </div>
-                  <div className="text-justify font-normal">
-                    {individual_data.story2}
+                  <div className="px-4 pb-4 border-l border-r border-b rounded-b-lg border-neutral-500 shadow-xl">
+                    {data.story2}
                   </div>
                 </div>
               </div>
-            ))}
+            )}
           </div>
         )}
       </div>
