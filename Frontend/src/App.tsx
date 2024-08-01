@@ -101,7 +101,13 @@ const App = () => {
       "Survivalist encounters the unexplainable in the Amazon.",
   });
 
-  const [chat, setChat] = useState([{}]);
+  const [chat, setChat] = useState([
+    {
+      short_form: "Lost and alone in the jungle, paranoia and terror creep in.",
+      story:
+        "A man is alone in the heart of an impenetrable jungle. The canopy is so thick that even the moon's light struggles to pierce through, casting eerie shadows that dance and distort in the undergrowth. His supplies are dwindling, and a growing sense of paranoia gnaws at him. Strange noises echo through the dense foliage, and as night descends, a blood-curdling scream shatters the silence. Fear, hunger, and the unknown conspire to push him to the brink of sanity.",
+    },
+  ]);
   const [selected, setSelected] = useState<string[]>(["story1", "story2"]);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -114,13 +120,13 @@ const App = () => {
         : { story: data.story2, short_form: data.story2_short_form };
     setChat((prev) => [...prev, data_to_insert]);
   };
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    console.log(data);
-  }
 
   useEffect(() => {
     console.log(chat);
   }, [chat]);
+  function onSubmit(data: z.infer<typeof FormSchema>) {
+    console.log(data);
+  }
 
   return (
     <div className="w-full font-sans border-2 border-black min-h-screen flex flex-col items-center">
@@ -235,33 +241,50 @@ const App = () => {
             </Form>
           </div>
         ) : (
-          <div className="flex flex-col gap-6 w-[70%] mx-auto pt-10">
-            {data && (
-              <div className="text-xl flex justify-between gap-8">
-                <div
-                  className="text-justify"
-                  onClick={(e) => handleClick(e, 0)}
-                >
-                  <div className="p-4 border-r border-t border-l rounded-t-lg border-neutral-600 ">
-                    {data.story1_short_form}
+          <div>
+            <div>
+              {chat.length !== 0 && (
+                <div className="w-[40%] mx-auto pt-10 gap-8 flex flex-col">
+                  {chat.map((solo_data, index) => (
+                    <div
+                      key={index}
+                      className="border border-neutral-500 rounded-xl shadow-xl text-xl text-justify"
+                    >
+                      <div className="p-4">{solo_data.short_form}</div>
+                      <div className="px-4 pb-4">{solo_data.story}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            <div className="flex flex-col gap-6 w-[70%] mx-auto pt-10">
+              {data && (
+                <div className="text-xl flex justify-between gap-8">
+                  <div
+                    className="text-justify"
+                    onClick={(e) => handleClick(e, 0)}
+                  >
+                    <div className="p-4 border-r border-t border-l rounded-t-lg border-neutral-600 ">
+                      {data.story1_short_form}
+                    </div>
+                    <div className="px-4 pb-4 border-l border-r border-b rounded-b-lg border-neutral-500 shadow-xl">
+                      {data.story1}
+                    </div>
                   </div>
-                  <div className="px-4 pb-4 border-l border-r border-b rounded-b-lg border-neutral-500 shadow-xl">
-                    {data.story1}
+                  <div
+                    className="text-justify"
+                    onClick={(e) => handleClick(e, 1)}
+                  >
+                    <div className="p-4 border-r border-t border-l rounded-t-lg border-neutral-600 ">
+                      {data.story2_short_form}
+                    </div>
+                    <div className="px-4 pb-4 border-l border-r border-b rounded-b-lg border-neutral-500 shadow-xl">
+                      {data.story2}
+                    </div>
                   </div>
                 </div>
-                <div
-                  className="text-justify"
-                  onClick={(e) => handleClick(e, 1)}
-                >
-                  <div className="p-4 border-r border-t border-l rounded-t-lg border-neutral-600 ">
-                    {data.story2_short_form}
-                  </div>
-                  <div className="px-4 pb-4 border-l border-r border-b rounded-b-lg border-neutral-500 shadow-xl">
-                    {data.story2}
-                  </div>
-                </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         )}
       </div>
