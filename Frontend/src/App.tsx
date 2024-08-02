@@ -85,54 +85,58 @@ const FormSchema = z.object({
 });
 
 const App = () => {
-  const [data, setData] = useState<{
-    story1: string;
-    story2: string;
-    story1_short_form: string;
-    story2_short_form: string;
-  }>({
-    story1:
-      "A man is alone in the heart of an impenetrable jungle. The canopy is so thick that even the moon's light struggles to pierce through, casting eerie shadows that dance and distort in the undergrowth. His supplies are dwindling, and a growing sense of paranoia gnaws at him. Strange noises echo through the dense foliage, and as night descends, a blood-curdling scream shatters the silence. Fear, hunger, and the unknown conspire to push him to the brink of sanity.",
-    story1_short_form:
-      "Lost and alone in the jungle, paranoia and terror creep in.",
-    story2:
-      "An experienced survivalist, Daniel, ventures into the heart of the Amazon rainforest. Armed with state-of-the-art equipment and years of training, he's prepared for the challenges that lie ahead. However, as he delves deeper, he encounters unexplainable phenomena. Ancient, whispered legends of the jungle begin to haunt his dreams. A creature, unseen but felt, stalks him through the undergrowth. His scientific mind clashes with the growing belief in the supernatural as he fights to survive.",
-    story2_short_form:
-      "Survivalist encounters the unexplainable in the Amazon.",
-  });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [fetcher, setFetcher] = useState<any>(null);
 
-  const [chat, setChat] = useState([
-    {
-      short_form: "Lost and alone in the jungle, paranoia and terror creep in.",
-      story:
-        "A man is alone in the heart of an impenetrable jungle. The canopy is so thick that even the moon's light struggles to pierce through, casting eerie shadows that dance and distort in the undergrowth. His supplies are dwindling, and a growing sense of paranoia gnaws at him. Strange noises echo through the dense foliage, and as night descends, a blood-curdling scream shatters the silence. Fear, hunger, and the unknown conspire to push him to the brink of sanity.",
-    },
-  ]);
-  const [selected, setSelected] = useState<string[]>(["story1", "story2"]);
+  const [chat, setChat] = useState([]);
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
-  const handleClick = (event, choice: number) => {
+
+  const handleClick = async (event, choice: number) => {
     event?.preventDefault();
-    const data_to_insert =
+    const to_insert =
       choice === 0
-        ? { story: data.story1, short_form: data.story1_short_form }
-        : { story: data.story2, short_form: data.story2_short_form };
-    setChat((prev) => [...prev, data_to_insert]);
+        ? { story: fetcher.story1, short_form: fetcher.story1_short_form }
+        : { story: fetcher.story2, short_form: fetcher.story2_short_form };
+    setChat((prev) => [...prev, to_insert]);
+    console.log("loading");
+    const res = await fetch("http://localhost:3000/data-get", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        method: "POST",
+      },
+    }).then((response) => response.json());
+    console.log("Complete");
+
+    setFetcher(res.server);
   };
 
   useEffect(() => {
-    console.log(chat);
+    console.log(chat, "from use Effect");
   }, [chat]);
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    console.log(data);
+
+  async function onSubmit(data: z.infer<typeof FormSchema>) {
+    console.log("loading");
+    const res = await fetch("http://localhost:3000/data-get", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        method: "POST",
+      },
+    }).then((response) => response.json());
+    console.log("Complete");
+    console.log(res);
+    setFetcher(res.server);
   }
 
   return (
     <div className="w-full font-sans border-2 border-black min-h-screen flex flex-col items-center">
       <Navbar />
       <div className="w-full">
-        {chat.length === 0 ? (
+        {!fetcher ? (
           <div className="rounded-lg w-[40rem]">
             <Form {...form}>
               <form
@@ -258,17 +262,17 @@ const App = () => {
               )}
             </div>
             <div className="flex flex-col gap-6 w-[70%] mx-auto pt-10">
-              {data && (
+              {fetcher && (
                 <div className="text-xl flex justify-between gap-8">
                   <div
                     className="text-justify"
                     onClick={(e) => handleClick(e, 0)}
                   >
                     <div className="p-4 border-r border-t border-l rounded-t-lg border-neutral-600 ">
-                      {data.story1_short_form}
+                      {fetcher.story1_short_form}
                     </div>
                     <div className="px-4 pb-4 border-l border-r border-b rounded-b-lg border-neutral-500 shadow-xl">
-                      {data.story1}
+                      {fetcher.story1}
                     </div>
                   </div>
                   <div
@@ -276,10 +280,10 @@ const App = () => {
                     onClick={(e) => handleClick(e, 1)}
                   >
                     <div className="p-4 border-r border-t border-l rounded-t-lg border-neutral-600 ">
-                      {data.story2_short_form}
+                      {fetcher.story2_short_form}
                     </div>
                     <div className="px-4 pb-4 border-l border-r border-b rounded-b-lg border-neutral-500 shadow-xl">
-                      {data.story2}
+                      {fetcher.story2}
                     </div>
                   </div>
                 </div>
