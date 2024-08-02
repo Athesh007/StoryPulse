@@ -1,6 +1,8 @@
+const z = require("zod");
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
+const ChatGoogleGenerativeAI = require("@langchain/google-genai");
 
 const app = express();
 app.use(cors());
@@ -11,8 +13,37 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
+// Define your model
+
 //test api
-app.post("/data-get", (req, res) => {
+app.post("/generate", async (req, res) => {
+  console.log("entered");
+  const model = new ChatGoogleGenerativeAI.ChatGoogleGenerativeAI({
+    model: "gemini-1.5-flash",
+    apikey: process.env.GOOGLE_API_KEY,
+  });
+  const browserSchema = z.object({
+    story1: z
+      .string()
+      .describe("Follow or create a story1 based on the same given request"),
+    story2: z
+      .string()
+      .describe(
+        "Follow or create another story based on the same given request"
+      ),
+  });
+
+  const llmWithStructuredOutput = model.withStructuredOutput(browserSchema, {
+    name: "story",
+  });
+  const structuredOutputRes = await llmWithStructuredOutput.invoke([
+    [
+      "human",
+      "You will be provided with some input for the first time with a requirement and then you need to create the story or follow with the choices made. Generate a horror, supernatural story based on a man in the middle of a deep jungle.",
+    ],
+  ]);
+
+  console.log(structuredOutputRes);
   const data = {
     story1:
       "A man is alone in the heart of an impenetrable jungle. The canopy is so thick that even the moon's light struggles to pierce through, casting eerie shadows that dance and distort in the undergrowth. His supplies are dwindling, and a growing sense of paranoia gnaws at him. Strange noises echo through the dense foliage, and as night descends, a blood-curdling scream shatters the silence. Fear, hunger, and the unknown conspire to push him to the brink of sanity.",
