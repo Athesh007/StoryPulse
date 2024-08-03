@@ -119,17 +119,28 @@ const App = () => {
   }, [chat]);
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    console.log("loading");
-    const res = await fetch("http://localhost:3000/data-get", {
+    // console.log("-------loading-------");
+    // const res = await fetch("http://localhost:3000/generate", {
+    //   method: "POST",
+    //   headers: {
+    //     Accept: "application/json",
+    //     method: "POST",
+    //   },
+    // }).then((response) => response.json());
+
+    // console.log("------Complete------");
+    // console.log(res.server);
+    console.log("------Second Call------");
+    const response = await fetch("http://localhost:3000/generate", {
       method: "POST",
       headers: {
         Accept: "application/json",
         method: "POST",
       },
-    }).then((response) => response.json());
-    console.log("Complete");
-    console.log(res);
-    setFetcher(res.server);
+      body: JSON.stringify({ test: "test" }),
+    }).then((resp) => resp.json());
+    console.log(response.server);
+    console.log("------Second call ended------");
   }
 
   return (
