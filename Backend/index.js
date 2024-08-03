@@ -24,41 +24,47 @@ const model = new ChatGoogleGenerativeAI.ChatGoogleGenerativeAI({
 app.post("/generate", async (req, res) => {
   console.log("entered");
   const browserSchema = z.object({
-    strory: z
-      .string()
-      .describe(
-        "Generate a story with the initital request or follow based on the story that user choose."
-      ),
     story1: z
       .string()
-      .describe("Follow or create a story1 based on the same given request"),
+      .describe(
+        "Follow or create a story1 based on the same given request. The story should be atleast 7 lines"
+      ),
     story2: z
       .string()
       .describe(
-        "Follow or create another story based on the same given request"
+        "Follow or create another story based on the same given request. The story should be atleast 7 lines"
+      ),
+    story1_short: z
+      .string()
+      .describe(
+        "Give a short line of the whole story1 for you to understand the next time when i prompt you"
+      ),
+    story2_short: z
+      .string()
+      .describe(
+        "Give a short line of the whole story2 for you to understand the next time when i prompt you"
       ),
   });
 
-  const llmWithStructuredOutput = model.withStructuredOutput(browserSchema, {
-    name: "story",
-  });
+  // const llmWithStructuredOutput = model.withStructuredOutput(browserSchema, {
+  //   name: "story",
+  // });
 
-  const structuredOutputRes = await llmWithStructuredOutput.invoke([
-    [
-      "system",
-      "You will be provided with some input for the first time with a requirement and then you need to create the story or follow with the choices made. Generate a horror, supernatural story based on a man in the middle of a deep jungle.",
-    ],
+  console.log(req.body);
+  // if (req.body.data) {
+  //   console.log("--------inside story choosing--------");
+  //   const resp = await llmWithStructuredOutput.invoke(
+  //     `I choose the story ${req.body.data}. The genere is ${req.body.genre}. Continue with it. `
+  //   );
+  //   console.log(resp);
+  //   return res.status(200).json({ server: resp });
+  // }
 
-    ["human", "generate a story or if choice available follow up on that"],
-  ]);
-
-  console.log(structuredOutputRes);
-
-  const followup = await llmWithStructuredOutput.invoke("I choose story 2");
-
-  console.log(followup);
-
-  res.status(200).json({ server: "data" });
+  // const structuredOutputRes = await llmWithStructuredOutput.invoke(
+  //   "Generate stories based on horror, supernatural"
+  // );
+  // console.log(structuredOutputRes);
+  res.status(200).json({ server: "structuredOutputRes" });
 });
 
 app.listen(3000, () => {
