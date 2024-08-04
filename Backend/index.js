@@ -23,6 +23,8 @@ const model = new ChatGoogleGenerativeAI.ChatGoogleGenerativeAI({
 //test api
 app.post("/generate", async (req, res) => {
   console.log("entered");
+  console.log(req.body);
+
   const browserSchema = z.object({
     story1: z
       .string()
@@ -46,27 +48,30 @@ app.post("/generate", async (req, res) => {
       ),
   });
 
-  // const llmWithStructuredOutput = model.withStructuredOutput(browserSchema, {
-  //   name: "story",
-  // });
+  const llmWithStructuredOutput = model.withStructuredOutput(browserSchema, {
+    name: "story",
+  });
 
-  console.log(req.body);
-  // if (req.body.data) {
-  //   console.log("--------inside story choosing--------");
-  //   const resp = await llmWithStructuredOutput.invoke(
-  //     `I choose the story ${req.body.data}. The genere is ${req.body.genre}. Continue with it. `
-  //   );
-  //   console.log(resp);
-  //   return res.status(200).json({ server: resp });
-  // }
+  if (req.body.selected_story) {
+    console.log("--------inside story choosing--------");
+    const resp = await llmWithStructuredOutput.invoke(
+      `. The genere is ${req.body.genre}. I have a story:${req.body.selected_story} continue with this story and generate two new stories following the stories which i gave previously. `
+    );
+    console.log(resp);
+    return res.status(200).json({ server: "resp" });
+  }
 
-  // const structuredOutputRes = await llmWithStructuredOutput.invoke(
-  //   "Generate stories based on horror, supernatural"
-  // );
-  // console.log(structuredOutputRes);
-  res.status(200).json({ server: "structuredOutputRes" });
+  const structuredOutputRes = await llmWithStructuredOutput.invoke(
+    `Generate stories based on ${req.body.genre} and the topic on which I need story is ${req.body.userdata}`
+  );
+  console.log(structuredOutputRes);
+  res.status(200).json({ server: structuredOutputRes });
 });
 
+app.post("/test", (req, res) => {
+  console.log(req.body);
+  res.status(200).json({ message: "Ok" });
+});
 app.listen(3000, () => {
   console.log(`Listening on port 3000`);
 });
