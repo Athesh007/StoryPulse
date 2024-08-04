@@ -29,22 +29,25 @@ app.post("/generate", async (req, res) => {
     story1: z
       .string()
       .describe(
-        "Follow or create a story1 based on the same given request. The story should be atleast 7 lines"
+        "create a story1 based on the given request. The story should be atleast 7 lines"
       ),
     story2: z
       .string()
       .describe(
-        "Follow or create another story based on the same given request. The story should be atleast 7 lines"
+        "create another story based on the given request. The story should be atleast 7 lines"
       ),
-    story1_short: z
+  });
+
+  const browserSchema_tune = z.object({
+    story1: z
       .string()
       .describe(
-        "Give a short line of the whole story1 for you to understand the next time when i prompt you"
+        "follow up with a new story1 from the given input story . The story should be atleast 7 lines"
       ),
-    story2_short: z
+    story2: z
       .string()
       .describe(
-        "Give a short line of the whole story2 for you to understand the next time when i prompt you"
+        "follow up with a new story2 from the given input story . The story should be atleast 7 lines"
       ),
   });
 
@@ -52,10 +55,17 @@ app.post("/generate", async (req, res) => {
     name: "story",
   });
 
+  const llmWithStructuredOutput_tune = model.withStructuredOutput(
+    browserSchema_tune,
+    {
+      name: "story",
+    }
+  );
+
   if (req.body.selected_story) {
     console.log("--------inside story choosing--------");
-    const resp = await llmWithStructuredOutput.invoke(
-      `. The genere is ${req.body.genre}. I have a story:${req.body.selected_story} continue with this story and generate two new stories following the stories which i gave previously. `
+    const resp = await llmWithStructuredOutput_tune.invoke(
+      `I have a story,The input story is ${req.body.selected_story}. Follow this story and create two new stories.`
     );
     console.log(resp);
     return res.status(200).json({ server: "resp" });
