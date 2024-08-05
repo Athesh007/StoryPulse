@@ -38,6 +38,7 @@ app.post("/generate", async (req, res) => {
       ),
   });
 
+  //Change from langchain to normal gemini functions
   const browserSchema_tune = z.object({
     story1: z
       .string()
@@ -65,14 +66,18 @@ app.post("/generate", async (req, res) => {
   if (req.body.selected_story) {
     console.log("--------inside story choosing--------");
     const resp = await llmWithStructuredOutput_tune.invoke(
-      `I have a story,The input story is ${req.body.selected_story}. Follow this story and create two new stories.`
+      `Generate two supernatural stories in JSON format with keys "story1" and "story2".
+
+Continue the existing ${req.body.genre} narrative with two new chapters, maintaining the eerie and atmosphere. The provided story is:${req.body.selected_story}`
     );
     console.log(resp);
     return res.status(200).json({ server: "resp" });
   }
 
   const structuredOutputRes = await llmWithStructuredOutput.invoke(
-    `Generate stories based on ${req.body.genre} and the topic on which I need story is ${req.body.userdata}`
+    `Generate two ${req.body.genre} stories in JSON format with keys "story1" and "story2".
+
+Create two original supernatural stories featuring a haunted house setting.`
   );
   console.log(structuredOutputRes);
   res.status(200).json({ server: structuredOutputRes });
