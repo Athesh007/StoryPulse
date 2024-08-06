@@ -2,8 +2,8 @@ const z = require("zod");
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
-// const { GoogleGenerativeAI } = require("@google/generative-ai");
-const ChatGoogleGenerativeAI = require("@langchain/google-genai");
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+// const ChatGoogleGenerativeAI = require("@langchain/google-genai");
 
 const app = express();
 app.use(cors());
@@ -15,70 +15,44 @@ app.get("/", (req, res) => {
 });
 
 // Define your model
-const model = new ChatGoogleGenerativeAI.ChatGoogleGenerativeAI({
-  model: "gemini-1.5-flash",
-  apikey: process.env.GOOGLE_API_KEY,
-});
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 //test api
 app.post("/generate", async (req, res) => {
   console.log("entered");
-  console.log(req.body);
+  console.log(req.body, "-- Request Body");
 
-  const browserSchema = z.object({
-    story1: z
-      .string()
-      .describe(
-        "create a story1 based on the given request. The story should be atleast 7 lines"
-      ),
-    story2: z
-      .string()
-      .describe(
-        "create another story based on the given request. The story should be atleast 7 lines"
-      ),
-  });
-
-  //Change from langchain to normal gemini functions
-  const browserSchema_tune = z.object({
-    story1: z
-      .string()
-      .describe(
-        "follow up with a new story1 from the given input story . The story should be atleast 7 lines"
-      ),
-    story2: z
-      .string()
-      .describe(
-        "follow up with a new story2 from the given input story . The story should be atleast 7 lines"
-      ),
-  });
-
-  const llmWithStructuredOutput = model.withStructuredOutput(browserSchema, {
-    name: "story",
-  });
-
-  const llmWithStructuredOutput_tune = model.withStructuredOutput(
-    browserSchema_tune,
-    {
-      name: "story",
-    }
-  );
-
+  //for selected story
   if (req.body.selected_story) {
     console.log("--------inside story choosing--------");
-    const resp = await llmWithStructuredOutput_tune.invoke(
-      `Generate two supernatural stories in JSON format with keys "story1" and "story2".
 
-Continue the existing ${req.body.genre} narrative with two new chapters, maintaining the eerie and atmosphere. The provided story is:${req.body.selected_story}`
-    );
+    const prompt_1 = `Generate two supernatural stories in below format 
+      {
+        story1:"The first story with atleast 7 lines",
+        story2:"The Second story with atleast 7 lines"
+      }
+      Continue the existing ${req.body.genre} narrative with two new chapters, maintaining the eerie and atmosphere. The provided story is:${req.body.selected_story}`;
+
+    const result_test = await model.generateContent(prompt_1);
+    const test_res = await result_test.response;
+    const resp = test_res.text();
+
     console.log(resp);
     return res.status(200).json({ server: "resp" });
   }
 
-  const structuredOutputRes = await llmWithStructuredOutput.invoke(
-    `Generate two ${req.body.genre} stories in JSON format with keys "story1" and "story2".
+  const prompt = `Generate two supernatural stories in below format 
+      {
+        story1:"The first story with atleast 7 lines",
+        story2:"The Second story with atleast 7 lines"
+      }
+      genre is: ${req.body.genre} stories.
+      Create two original stories with the context ${req.body.userdata}`;
 
-Create two original supernatural stories featuring a haunted house setting.`
-  );
+  const result = await model.generateContent(prompt);
+  const response = await result.response;
+  const structuredOutputRes = response.text();
   console.log(structuredOutputRes);
   res.status(200).json({ server: structuredOutputRes });
 });

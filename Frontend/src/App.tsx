@@ -127,22 +127,26 @@ const App = () => {
       },
       body: JSON.stringify({ genre: data.genre, userdata: data.userdata }),
     }).then((response) => response.json());
+    const sender = JSON.parse(res.server);
+    console.log(sender);
+    console.log("Time out");
 
-    console.log(res.server.story2_short);
-
-    console.log("------Second Call------");
-    const response = await fetch("http://localhost:3000/generate", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        genre: data.genre,
-        selected_story: res.server.story2,
-      }),
-    }).then((resp) => resp.json());
-    console.log(response.server);
-    console.log("------Second call ended------");
+    setTimeout(async () => {
+      console.log("------Second Call------");
+      const response = await fetch("http://localhost:3000/generate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          genre: data.genre,
+          selected_story: sender.story2,
+        }),
+      }).then((resp) => resp.json());
+      console.log(response.server);
+      console.log("------Second call ended------");
+    }, 2000);
+    console.log("Time out Complete");
   }
 
   return (
