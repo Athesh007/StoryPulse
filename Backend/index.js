@@ -20,13 +20,8 @@ const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 //test api
 app.post("/generate", async (req, res) => {
-  console.log("entered");
-  console.log(req.body, "-- Request Body");
-
   //for selected story
   if (req.body.selected_story) {
-    console.log("--------inside story choosing--------");
-
     const prompt_1 = `Generate two supernatural stories in below format
       Always follow the below format during output
       {
@@ -39,7 +34,6 @@ app.post("/generate", async (req, res) => {
     const test_res = await result_test.response;
     let resp = test_res.text();
     if (resp.startsWith("`")) resp = resp.slice(7, resp.length - 4);
-    console.log(resp);
     return res.status(200).json({ server: resp });
   }
 
@@ -55,8 +49,10 @@ app.post("/generate", async (req, res) => {
   const response = await result.response;
   let structuredOutputRes = response.text();
   if (structuredOutputRes.startsWith("`"))
-    structuredOutputRes = structuredOutputRes.slice(7, a.length - 4);
-  console.log(structuredOutputRes);
+    structuredOutputRes = structuredOutputRes.slice(
+      7,
+      structuredOutputRes.length - 4
+    );
   res.status(200).json({ server: structuredOutputRes });
 });
 

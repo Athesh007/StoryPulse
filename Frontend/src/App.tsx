@@ -87,8 +87,8 @@ const FormSchema = z.object({
 const App = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [fetcher, setFetcher] = useState<any>(null);
-
   const [chat, setChat] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -96,22 +96,24 @@ const App = () => {
 
   const handleClick = async (event, choice: number) => {
     event?.preventDefault();
+    setLoading(true);
+    setFetcher(null);
     const to_insert =
-      choice === 0
-        ? { story: fetcher.story1, short_form: fetcher.story1_short_form }
-        : { story: fetcher.story2, short_form: fetcher.story2_short_form };
+      choice === 0 ? { story: fetcher.story1 } : { story: fetcher.story2 };
     setChat((prev) => [...prev, to_insert]);
-    console.log("loading");
-    const res = await fetch("http://localhost:3000/data-get", {
+    const response = await fetch("http://localhost:3000/generate", {
       method: "POST",
       headers: {
-        Accept: "application/json",
-        method: "POST",
+        "Content-Type": "application/json",
       },
-    }).then((response) => response.json());
-    console.log("Complete");
-
-    setFetcher(res.server);
+      body: JSON.stringify({
+        genre: fetcher.genre,
+        selected_story: choice === 0 ? fetcher.story1 : fetcher.story2,
+      }),
+    }).then((resp) => resp.json());
+    const tester = JSON.parse(response.server);
+    setFetcher(tester);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -119,7 +121,7 @@ const App = () => {
   }, [chat]);
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    console.log("-------loading-------");
+    setLoading(true);
     const res = await fetch("http://localhost:3000/generate", {
       method: "POST",
       headers: {
@@ -128,26 +130,9 @@ const App = () => {
       body: JSON.stringify({ genre: data.genre, userdata: data.userdata }),
     }).then((response) => response.json());
     const sender = JSON.parse(res.server);
-    console.log(sender);
-    console.log("Time out");
-
-    setTimeout(async () => {
-      console.log("------Second Call------");
-      const response = await fetch("http://localhost:3000/generate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          genre: data.genre,
-          selected_story: sender.story2,
-        }),
-      }).then((resp) => resp.json());
-      const tester = JSON.parse(response.server);
-      console.log(tester);
-      console.log("------Second call ended------");
-    }, 2000);
-    console.log("Time out Complete");
+    sender.genre = data.genre;
+    setFetcher(sender);
+    setLoading(false);
   }
 
   return (
@@ -272,7 +257,6 @@ const App = () => {
                       key={index}
                       className="border border-neutral-500 rounded-xl shadow-xl text-xl text-justify"
                     >
-                      <div className="p-4">{solo_data.short_form}</div>
                       <div className="px-4 pb-4">{solo_data.story}</div>
                     </div>
                   ))}
@@ -286,10 +270,7 @@ const App = () => {
                     className="text-justify"
                     onClick={(e) => handleClick(e, 0)}
                   >
-                    <div className="p-4 border-r border-t border-l rounded-t-lg border-neutral-600 ">
-                      {fetcher.story1_short_form}
-                    </div>
-                    <div className="px-4 pb-4 border-l border-r border-b rounded-b-lg border-neutral-500 shadow-xl">
+                    <div className="p-4 border rounded-lg border-neutral-500 shadow-xl">
                       {fetcher.story1}
                     </div>
                   </div>
@@ -297,10 +278,7 @@ const App = () => {
                     className="text-justify"
                     onClick={(e) => handleClick(e, 1)}
                   >
-                    <div className="p-4 border-r border-t border-l rounded-t-lg border-neutral-600 ">
-                      {fetcher.story2_short_form}
-                    </div>
-                    <div className="px-4 pb-4 border-l border-r border-b rounded-b-lg border-neutral-500 shadow-xl">
+                    <div className="p-4 border rounded-lg border-neutral-500 shadow-xl">
                       {fetcher.story2}
                     </div>
                   </div>
