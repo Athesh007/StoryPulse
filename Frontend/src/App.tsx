@@ -87,7 +87,7 @@ const FormSchema = z.object({
 const App = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [fetcher, setFetcher] = useState<any>(null);
-  const [chat, setChat] = useState([]);
+  const [chat, setChat] = useState<{ story: string }[]>([]);
   const [loading, setLoading] = useState(false);
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -97,7 +97,6 @@ const App = () => {
   const handleClick = async (event, choice: number) => {
     event?.preventDefault();
     setLoading(true);
-    setFetcher(null);
     const to_insert =
       choice === 0 ? { story: fetcher.story1 } : { story: fetcher.story2 };
     setChat((prev) => [...prev, to_insert]);
@@ -138,8 +137,12 @@ const App = () => {
   return (
     <div className="w-full font-sans border-2 border-black min-h-screen flex flex-col items-center">
       <Navbar />
-      <div className="w-full">
-        {!fetcher ? (
+      <div className="w-full flex items-center justify-center pt-10">
+        {loading ? (
+          <div className="w-[40%] mx-auto animate-pulse gap-8 flex border border-neutral-500 rounded-xl  text-xl items-center justify-center h-[25rem]">
+            <div>Please Wait...</div>
+          </div>
+        ) : !fetcher ? (
           <div className="rounded-lg w-[40rem]">
             <Form {...form}>
               <form
@@ -250,39 +253,51 @@ const App = () => {
         ) : (
           <div>
             <div>
-              {chat.length !== 0 && (
-                <div className="w-[40%] mx-auto pt-10 gap-8 flex flex-col">
-                  {chat.map((solo_data, index) => (
-                    <div
-                      key={index}
-                      className="border border-neutral-500 rounded-xl shadow-xl text-xl text-justify"
-                    >
-                      <div className="px-4 pb-4">{solo_data.story}</div>
-                    </div>
-                  ))}
-                </div>
-              )}
+              <div className="w-[40%] mx-auto pt-10 gap-8 flex flex-col">
+                {chat.map((solo_data, index) => (
+                  <div
+                    key={index}
+                    className="border border-neutral-500 rounded-xl shadow-xl text-xl text-justify"
+                  >
+                    <div className="px-4 pb-4">{solo_data.story}</div>
+                  </div>
+                ))}
+              </div>
             </div>
             <div className="flex flex-col gap-6 w-[70%] mx-auto pt-10">
-              {fetcher && (
-                <div className="text-xl flex justify-between gap-8">
-                  <div
-                    className="text-justify"
-                    onClick={(e) => handleClick(e, 0)}
-                  >
-                    <div className="p-4 border rounded-lg border-neutral-500 shadow-xl">
-                      {fetcher.story1}
+              {loading ? (
+                <div>
+                  <div className="text-xl flex justify-between gap-8 animate-pulse">
+                    <div className="p-4 border rounded-lg border-neutral-500 w-full h-[25rem] flex items-center justify-center ">
+                      Please Wait...
                     </div>
-                  </div>
-                  <div
-                    className="text-justify"
-                    onClick={(e) => handleClick(e, 1)}
-                  >
-                    <div className="p-4 border rounded-lg border-neutral-500 shadow-xl">
-                      {fetcher.story2}
+
+                    <div className="p-4 border rounded-lg border-neutral-500 w-full h-[25rem] flex items-center justify-center">
+                      Please Wait...
                     </div>
                   </div>
                 </div>
+              ) : (
+                fetcher && (
+                  <div className="text-xl flex justify-between gap-8">
+                    <div
+                      className="text-justify"
+                      onClick={(e) => handleClick(e, 0)}
+                    >
+                      <div className="p-4 border rounded-lg border-neutral-500 shadow-xl">
+                        {fetcher.story1}
+                      </div>
+                    </div>
+                    <div
+                      className="text-justify"
+                      onClick={(e) => handleClick(e, 1)}
+                    >
+                      <div className="p-4 border rounded-lg border-neutral-500 shadow-xl">
+                        {fetcher.story2}
+                      </div>
+                    </div>
+                  </div>
+                )
               )}
             </div>
           </div>
