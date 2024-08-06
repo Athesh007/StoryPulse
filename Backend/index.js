@@ -27,19 +27,20 @@ app.post("/generate", async (req, res) => {
   if (req.body.selected_story) {
     console.log("--------inside story choosing--------");
 
-    const prompt_1 = `Generate two supernatural stories in below format 
+    const prompt_1 = `Generate two supernatural stories in below format
+      Always follow the below format during output
       {
-        story1:"The first story with atleast 7 lines",
-        story2:"The Second story with atleast 7 lines"
+        story1:"One possible continue of the story provided, it should be atleast 7 lines"
+        story2:"Another possible continue of the story provided, it should be atleast 7 lines"
       }
-      Continue the existing ${req.body.genre} narrative with two new chapters, maintaining the eerie and atmosphere. The provided story is:${req.body.selected_story}`;
+      Continue the existing narrative with two new chapters following the story ${req.body.selected_story}, maintaining story itself. Continue from the provided story. Do not give the same story again. The genre is ${req.body.genre}`;
 
     const result_test = await model.generateContent(prompt_1);
     const test_res = await result_test.response;
-    const resp = test_res.text();
-
+    let resp = test_res.text();
+    if (resp.startsWith("`")) resp = resp.slice(7, resp.length - 4);
     console.log(resp);
-    return res.status(200).json({ server: "resp" });
+    return res.status(200).json({ server: resp });
   }
 
   const prompt = `Generate two supernatural stories in below format 
@@ -52,7 +53,9 @@ app.post("/generate", async (req, res) => {
 
   const result = await model.generateContent(prompt);
   const response = await result.response;
-  const structuredOutputRes = response.text();
+  let structuredOutputRes = response.text();
+  if (structuredOutputRes.startsWith("`"))
+    structuredOutputRes = structuredOutputRes.slice(7, a.length - 4);
   console.log(structuredOutputRes);
   res.status(200).json({ server: structuredOutputRes });
 });

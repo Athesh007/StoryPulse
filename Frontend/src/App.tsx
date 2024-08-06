@@ -143,7 +143,8 @@ const App = () => {
           selected_story: sender.story2,
         }),
       }).then((resp) => resp.json());
-      console.log(response.server);
+      const tester = JSON.parse(response.server);
+      console.log(tester);
       console.log("------Second call ended------");
     }, 2000);
     console.log("Time out Complete");
