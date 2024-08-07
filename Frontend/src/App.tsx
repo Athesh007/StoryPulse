@@ -3,6 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import ReactMarkdown from "react-markdown";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -85,21 +86,25 @@ const FormSchema = z.object({
 });
 
 const App = () => {
+  const [loading, setLoading] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [fetcher, setFetcher] = useState<any>(null);
+  const [formloading, setFormloading] = useState(false);
   const [chat, setChat] = useState<{ story: string }[]>([]);
-  const [loading, setLoading] = useState(false);
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
 
-  const handleClick = async (event, choice: number) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleClick = async (event: any, choice: number) => {
     event?.preventDefault();
+
     setLoading(true);
     const to_insert =
       choice === 0 ? { story: fetcher.story1 } : { story: fetcher.story2 };
     setChat((prev) => [...prev, to_insert]);
+    //fetch new data
     const response = await fetch("http://localhost:3000/generate", {
       method: "POST",
       headers: {
@@ -120,7 +125,7 @@ const App = () => {
   }, [chat]);
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    setLoading(true);
+    setFormloading(true);
     const res = await fetch("http://localhost:3000/generate", {
       method: "POST",
       headers: {
@@ -131,18 +136,14 @@ const App = () => {
     const sender = JSON.parse(res.server);
     sender.genre = data.genre;
     setFetcher(sender);
-    setLoading(false);
+    setFormloading(false);
   }
 
   return (
     <div className="w-full font-sans border-2 border-black min-h-screen flex flex-col items-center">
       <Navbar />
       <div className="w-full flex items-center justify-center pt-10">
-        {loading ? (
-          <div className="w-[40%] mx-auto animate-pulse gap-8 flex border border-neutral-500 rounded-xl  text-xl items-center justify-center h-[25rem]">
-            <div>Please Wait...</div>
-          </div>
-        ) : !fetcher ? (
+        {!fetcher ? (
           <div className="rounded-lg w-[40rem]">
             <Form {...form}>
               <form
@@ -156,8 +157,8 @@ const App = () => {
                     <FormItem>
                       <div className=" w-full ">
                         <Textarea
-                          className="py-2 pr-2 bg-transparent w-full outline-none resize-none border-none placeholder:text-neutral-400 font-medium"
-                          placeholder="Ask anything..."
+                          className="py-2 pr-2 bg-transparent w-full outline-none resize-none border-none placeholder:text-neutral-400 text-base"
+                          placeholder="Generate your story..."
                           onChange={(event) => {
                             form.setValue("userdata", event.target.value);
                           }}
@@ -180,7 +181,7 @@ const App = () => {
                                 variant="secondary"
                                 role="combobox"
                                 className={cn(
-                                  "w-[200px] justify-between",
+                                  "w-[200px] justify-between font-normal",
                                   !field.value && "text-muted-foreground"
                                 )}
                               >
@@ -228,24 +229,33 @@ const App = () => {
                       </FormItem>
                     )}
                   />
-                  <Button type="submit" className="px-0">
-                    <div className="bg-neutral-200 p-2 rounded-lg cursor-pointer">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth={1.5}
-                        stroke="currentColor"
-                        className="size-6 "
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5"
-                        />
-                      </svg>
-                    </div>
-                  </Button>
+                  {formloading === true ? (
+                    <button
+                      className="flex animate-pulse border border-neutral-500 px-4 p-2 rounded-lg bg-neutral-100 text-neutral-600 cursor-not-allowed"
+                      disabled
+                    >
+                      Processing...
+                    </button>
+                  ) : (
+                    <Button type="submit" className="px-0">
+                      <div className="bg-neutral-200 p-2 rounded-lg cursor-pointer">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={1.5}
+                          stroke="currentColor"
+                          className="size-6 "
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5"
+                          />
+                        </svg>
+                      </div>
+                    </Button>
+                  )}
                 </div>
               </form>
             </Form>
@@ -253,16 +263,21 @@ const App = () => {
         ) : (
           <div>
             <div>
-              <div className="w-[40%] mx-auto pt-10 gap-8 flex flex-col">
-                {chat.map((solo_data, index) => (
-                  <div
-                    key={index}
-                    className="border border-neutral-500 rounded-xl shadow-xl text-xl text-justify"
-                  >
-                    <div className="px-4 pb-4">{solo_data.story}</div>
-                  </div>
-                ))}
-              </div>
+              {chat.length === 0 ? (
+                <div className="w-full flex items-center justify-center text-xl p-4 pb-10 font-semibold font-sans">
+                  Please select any one of the below stories to continue
+                </div>
+              ) : (
+                <div className="w-[70%] mx-auto py-4 flex flex-col border border-neutral-500 rounded-xl shadow-xl">
+                  {chat.map((solo_data, index) => (
+                    <div key={index} className="text-xl">
+                      <ReactMarkdown className="px-4 py-2">
+                        {solo_data.story}
+                      </ReactMarkdown>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
             <div className="flex flex-col gap-6 w-[70%] mx-auto pt-10">
               {loading ? (
@@ -279,22 +294,35 @@ const App = () => {
                 </div>
               ) : (
                 fetcher && (
-                  <div className="text-xl flex justify-between gap-8">
-                    <div
-                      className="text-justify"
-                      onClick={(e) => handleClick(e, 0)}
-                    >
-                      <div className="p-4 border rounded-lg border-neutral-500 shadow-xl">
-                        {fetcher.story1}
+                  <div>
+                    <div className="w-full flex items-center justify-center text-xl p-4 pb-10 font-semibold font-sans">
+                      Please select any one of the below stories to continue
+                    </div>
+                    <div className="text-xl flex justify-between gap-8">
+                      <div
+                        className="text-justify cursor-pointer"
+                        onClick={(e) => handleClick(e, 0)}
+                      >
+                        <div className="p-4 border rounded-lg border-neutral-500 shadow-xl">
+                          {fetcher.story1}
+                        </div>
+                      </div>
+                      <div
+                        className="text-justify cursor-pointer"
+                        onClick={(e) => handleClick(e, 1)}
+                      >
+                        <div className="p-4 border rounded-lg border-neutral-500 shadow-xl">
+                          {fetcher.story2}
+                        </div>
                       </div>
                     </div>
-                    <div
-                      className="text-justify"
-                      onClick={(e) => handleClick(e, 1)}
-                    >
-                      <div className="p-4 border rounded-lg border-neutral-500 shadow-xl">
-                        {fetcher.story2}
-                      </div>
+                    <div className="p-6 flex items-center justify-center">
+                      <button
+                        className="p-2 px-4 boredr border-neutral-500 bg-neutral-900 rounded-lg text-white text-lg"
+                        onClick={(e) => handleClick(e, 2)}
+                      >
+                        End Story
+                      </button>
                     </div>
                   </div>
                 )

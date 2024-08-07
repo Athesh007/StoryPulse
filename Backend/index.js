@@ -23,7 +23,7 @@ app.post("/generate", async (req, res) => {
   //for selected story
   if (req.body.selected_story) {
     const prompt_1 = `Generate two supernatural stories in below format
-      Always follow the below format during output
+      Always follow the below format during output as a markdown format with proper paragraph spacing.
       {
         story1:"One possible continue of the story provided, it should be atleast 7 lines"
         story2:"Another possible continue of the story provided, it should be atleast 7 lines"
@@ -37,7 +37,7 @@ app.post("/generate", async (req, res) => {
     return res.status(200).json({ server: resp });
   }
 
-  const prompt = `Generate two supernatural stories in below format 
+  const prompt = `Generate two supernatural stories in below format as a markdown format with proper paragraph spacing. 
       {
         story1:"The first story with atleast 7 lines",
         story2:"The Second story with atleast 7 lines"
