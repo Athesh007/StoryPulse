@@ -91,7 +91,7 @@ const App = () => {
   const [fetcher, setFetcher] = useState<any>(null);
   const [formloading, setFormloading] = useState(false);
   const [chat, setChat] = useState<{ story: string }[]>([]);
-  const [continue_btn, setContinue_btn] = useState(false);
+  const [continue_btn, setContinue_btn] = useState(true);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
@@ -106,10 +106,20 @@ const App = () => {
   };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const Continue_generation = async (event, choice: number) => {
+  const Continue_generation = async (event: any, choice: number) => {
     event.preventDefault();
     if (choice === 1) {
       setContinue_btn(false);
+      const response = await fetch("http://localhost:3000/save-story", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          data: chat,
+        }),
+      }).then((resp) => resp.json());
+      console.log(response);
       return;
     }
     setLoading(true);
@@ -326,16 +336,15 @@ const App = () => {
                   </div>
                 </div>
               )}
-              {continue_btn && (
+              {!loading && continue_btn && (
                 <div className="p-6 gap-20 flex items-center justify-center w-[90%]">
-                  (
                   <button
                     className="p-2 px-4 boredr border-neutral-500 bg-neutral-900 rounded-lg text-white text-lg"
                     onClick={(e) => Continue_generation(e, 0)}
                   >
                     Continue Story
                   </button>
-                  )
+
                   <button
                     className="p-2 px-4 boredr border-neutral-500 bg-neutral-900 rounded-lg text-white text-lg"
                     onClick={(e) => Continue_generation(e, 1)}

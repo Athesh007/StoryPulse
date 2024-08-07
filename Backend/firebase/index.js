@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
-require("dotenv").config();
+import { getFirestore } from "firebase/firestore";
+import "dotenv/config";
 
 const firebaseConfig = {
   apiKey: process.env.FIREBASE_API_KEY,
@@ -10,4 +11,8 @@ const firebaseConfig = {
   appId: "1:575942696482:web:0600f89ae04e48b43ab47b",
 };
 
-export const app = initializeApp(firebaseConfig);
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+
+// Initialize Cloud Firestore and get a reference to the service
+export const db = getFirestore(app);

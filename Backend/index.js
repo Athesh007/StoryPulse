@@ -1,16 +1,26 @@
-const z = require("zod");
-const express = require("express");
-const cors = require("cors");
-require("dotenv").config();
-const { GoogleGenerativeAI } = require("@google/generative-ai");
-// const ChatGoogleGenerativeAI = require("@langchain/google-genai");
+import express from "express";
+import cors from "cors";
+import "dotenv/config";
+
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import { db } from "./firebase/index.js";
+import { addDoc, collection } from "firebase/firestore";
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  console.log(process.env.EXAMPLE_KEY);
+app.post("/save-story", async (req, res) => {
+  try {
+    const docRef = await addDoc(collection(db, "stories"), {
+      chat: req.body.data,
+    });
+    console.log("Document written with ID: ", docRef.id);
+    return res.send(docRef);
+  } catch (e) {
+    console.error("Error adding document: ", e);
+  }
+
   res.send("Hello World!");
 });
 
