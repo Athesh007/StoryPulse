@@ -1,10 +1,9 @@
-import express from "express";
-import cors from "cors";
 import "dotenv/config";
-
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import cors from "cors";
+import express from "express";
 import { db } from "./firebase/index.js";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, getDocs } from "firebase/firestore";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const app = express();
 app.use(cors());
@@ -20,8 +19,16 @@ app.post("/save-story", async (req, res) => {
   } catch (e) {
     console.error("Error adding document: ", e);
   }
-
   res.send("Hello World!");
+});
+
+app.get("/get-story", async (req, res) => {
+  const querySnapshot = await getDocs(collection(db, "stories"));
+  let arr = [];
+  querySnapshot.forEach((doc) => {
+    arr.push(doc.data());
+  });
+  res.send(arr);
 });
 
 // Define your model
