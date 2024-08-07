@@ -91,7 +91,7 @@ const App = () => {
   const [fetcher, setFetcher] = useState<any>(null);
   const [formloading, setFormloading] = useState(false);
   const [chat, setChat] = useState<{ story: string }[]>([]);
-
+  const [continue_btn, setContinue_btn] = useState(false);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
@@ -99,11 +99,20 @@ const App = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleClick = async (event: any, choice: number) => {
     event?.preventDefault();
-
-    setLoading(true);
     const to_insert =
       choice === 0 ? { story: fetcher.story1 } : { story: fetcher.story2 };
     setChat((prev) => [...prev, to_insert]);
+    setFetcher("data");
+  };
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const Continue_generation = async (event, choice: number) => {
+    event.preventDefault();
+    if (choice === 1) {
+      setContinue_btn(false);
+      return;
+    }
+    setLoading(true);
     //fetch new data
     const response = await fetch("http://localhost:3000/generate", {
       method: "POST",
@@ -112,7 +121,7 @@ const App = () => {
       },
       body: JSON.stringify({
         genre: fetcher.genre,
-        selected_story: choice === 0 ? fetcher.story1 : fetcher.story2,
+        selected_story: chat[chat.length - 1].story,
       }),
     }).then((resp) => resp.json());
     const tester = JSON.parse(response.server);
@@ -264,14 +273,12 @@ const App = () => {
           <div>
             <div>
               {chat.length === 0 ? (
-                <div className="w-full flex items-center justify-center text-xl p-4 pb-10 font-semibold font-sans">
-                  Please select any one of the below stories to continue
-                </div>
+                <div></div>
               ) : (
                 <div className="w-[70%] mx-auto py-4 flex flex-col border border-neutral-500 rounded-xl shadow-xl">
                   {chat.map((solo_data, index) => (
                     <div key={index} className="text-xl">
-                      <ReactMarkdown className="px-4 py-2">
+                      <ReactMarkdown className="px-6 py-2">
                         {solo_data.story}
                       </ReactMarkdown>
                     </div>
@@ -292,40 +299,50 @@ const App = () => {
                     </div>
                   </div>
                 </div>
+              ) : fetcher === "data" ? (
+                <div></div>
               ) : (
-                fetcher && (
-                  <div>
-                    <div className="w-full flex items-center justify-center text-xl p-4 pb-10 font-semibold font-sans">
-                      Please select any one of the below stories to continue
-                    </div>
-                    <div className="text-xl flex justify-between gap-8">
-                      <div
-                        className="text-justify cursor-pointer"
-                        onClick={(e) => handleClick(e, 0)}
-                      >
-                        <div className="p-4 border rounded-lg border-neutral-500 shadow-xl">
-                          {fetcher.story1}
-                        </div>
-                      </div>
-                      <div
-                        className="text-justify cursor-pointer"
-                        onClick={(e) => handleClick(e, 1)}
-                      >
-                        <div className="p-4 border rounded-lg border-neutral-500 shadow-xl">
-                          {fetcher.story2}
-                        </div>
+                <div>
+                  <div className="w-full flex items-center justify-center text-xl p-4 pb-10 font-semibold font-sans">
+                    Please select any one of the below stories to continue
+                  </div>
+                  <div className="text-xl flex justify-between gap-8">
+                    <div
+                      className="text-justify cursor-pointer"
+                      onClick={(e) => handleClick(e, 0)}
+                    >
+                      <div className="p-4 border rounded-lg border-neutral-500 shadow-xl">
+                        {fetcher.story1}
                       </div>
                     </div>
-                    <div className="p-6 flex items-center justify-center">
-                      <button
-                        className="p-2 px-4 boredr border-neutral-500 bg-neutral-900 rounded-lg text-white text-lg"
-                        onClick={(e) => handleClick(e, 2)}
-                      >
-                        End Story
-                      </button>
+                    <div
+                      className="text-justify cursor-pointer"
+                      onClick={(e) => handleClick(e, 1)}
+                    >
+                      <div className="p-4 border rounded-lg border-neutral-500 shadow-xl">
+                        {fetcher.story2}
+                      </div>
                     </div>
                   </div>
-                )
+                </div>
+              )}
+              {continue_btn && (
+                <div className="p-6 gap-20 flex items-center justify-center w-[90%]">
+                  (
+                  <button
+                    className="p-2 px-4 boredr border-neutral-500 bg-neutral-900 rounded-lg text-white text-lg"
+                    onClick={(e) => Continue_generation(e, 0)}
+                  >
+                    Continue Story
+                  </button>
+                  )
+                  <button
+                    className="p-2 px-4 boredr border-neutral-500 bg-neutral-900 rounded-lg text-white text-lg"
+                    onClick={(e) => Continue_generation(e, 1)}
+                  >
+                    End Story
+                  </button>
+                </div>
               )}
             </div>
           </div>
