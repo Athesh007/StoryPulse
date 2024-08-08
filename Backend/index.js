@@ -39,7 +39,7 @@ const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 app.post("/generate", async (req, res) => {
   //for selected story
   if (req.body.selected_story) {
-    const prompt_1 = `Generate two supernatural stories in below format
+    const prompt_1 = `Generate two stories in below format
       Always follow the below format during output as a markdown format with proper paragraph spacing.
       {
         story1:"One possible continue of the story provided, it should be atleast 7 lines"
@@ -54,7 +54,24 @@ app.post("/generate", async (req, res) => {
     return res.status(200).json({ server: resp });
   }
 
-  const prompt = `Generate two supernatural stories in below format as a markdown format with proper paragraph spacing. 
+  if (req.body.last_chat) {
+    const prompt_1 = `Generate story in below format
+      Always follow the below format during output without markdown format
+      {
+        story:"Rewrite the following story section while maintaining the overall plot, character development, and tone of the original story:${req.body.last_chat}.
+      Replace the ${req.body.need_change} with the specific part you want to change.
+      Include the following elements in the revised section: ${req.body.input}."
+      }
+      genre is: ${req.body.genre} stories.
+      `;
+
+    const result_test = await model.generateContent(prompt_1);
+    const test_res = await result_test.response;
+    let resp = test_res.text();
+    if (resp.startsWith("`")) resp = resp.slice(7, resp.length - 4);
+    return res.status(200).json({ server: resp });
+  }
+  const prompt = `Generate two stories in below format as a markdown format with proper paragraph spacing. 
       {
         story1:"The first story with atleast 7 lines",
         story2:"The Second story with atleast 7 lines"
