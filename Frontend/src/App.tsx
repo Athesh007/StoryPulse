@@ -28,7 +28,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Textarea } from "./components/ui/textarea";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const frameworks = [
   {
@@ -88,10 +88,18 @@ const FormSchema = z.object({
 const App = () => {
   const [loading, setLoading] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [fetcher, setFetcher] = useState<any>(null);
+  const [fetcher, setFetcher] = useState<any>("null");
   const [formloading, setFormloading] = useState(false);
-  const [chat, setChat] = useState<{ story: string }[]>([]);
+  const [chat, setChat] = useState<{ story: string }[]>([
+    {
+      story: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam id porta ipsum. In at odio dolor. Aliquam sollicitudin, lacus ac commodo tempor, augue ipsum posuere arcu, nec interdum lacus risus id enim. Duis mattis dolor at leo feugiat lacinia. Proin porta urna ac finibus laoreet. Donec cursus faucibus est a consectetur. Mauris non sapien sapien. Sed non purus et risus gravida fringilla. Duis in ex ut odio sollicitudin posuere. Phasellus quis urna non leo gravida varius. Nullam egestas consequat enim vel lobortis. Nulla ultricies cursus aliquet. Donec in purus pharetra, sollicitudin justo ut, elementum odio. Sed at turpis eleifend, aliquet velit nec, vestibulum leo. Curabitur eu tortor id ex posuere blandit quis ut turpis. Etiam fermentum diam id dui imperdiet rhoncus.`,
+    },
+  ]);
   const [continue_btn, setContinue_btn] = useState(true);
+  const [highlighted, setHighlighted] = useState<string>("");
+  const [selectedstate, setSelectedstate] = useState(false);
+  const [dummy, setDummy] = useState("");
+  const editref = useRef(null);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
@@ -287,7 +295,31 @@ const App = () => {
               ) : (
                 <div className="w-[70%] mx-auto py-4 flex flex-col border border-neutral-500 rounded-xl shadow-xl">
                   {chat.map((solo_data, index) => (
-                    <div key={index} className="text-xl">
+                    <div
+                      key={index}
+                      className="text-xl relative"
+                      onMouseUp={() => {
+                        setSelectedstate(true);
+                        setHighlighted(window.getSelection()?.toString());
+                        setDummy(highlighted);
+                      }}
+                    >
+                      {selectedstate && (
+                        <div className="w-[95%] mx-auto p-2 border border-neutral-500 rounded-xl text-white">
+                          <textarea
+                            className="w-full border-none resize-none text-black outline-none text-lg"
+                            ref={editref}
+                          />
+                          <div className="flex justify-end">
+                            <button
+                              className="text-white bg-black pt-1 pb-2 px-4 text-base rounded-lg flex items-center justify-center"
+                              onClick={() => console.log(dummy)}
+                            >
+                              Reimagine
+                            </button>
+                          </div>
+                        </div>
+                      )}
                       <ReactMarkdown className="px-6 py-2">
                         {solo_data.story}
                       </ReactMarkdown>
