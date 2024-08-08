@@ -175,22 +175,22 @@ const App = () => {
   }, [chat]);
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    setFormloading(true);
-    const res = await fetch("http://localhost:3000/generate", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ genre: data.genre, userdata: data.userdata }),
-    }).then((response) => response.json());
-    try {
-      const sender = JSON.parse(res.server);
-      sender.genre = data.genre;
-      setFetcher(sender);
-      setFormloading(false);
-    } catch (err) {
-      setError(err);
-    }
+    // setFormloading(true);
+    // const res = await fetch("http://localhost:3000/generate", {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   body: JSON.stringify({ genre: data.genre, userdata: data.userdata }),
+    // }).then((response) => response.json());
+    // try {
+    //   const sender = JSON.parse(res.server);
+    //   sender.genre = data.genre;
+    //   setFetcher(sender);
+    //   setFormloading(false);
+    // } catch (err) {
+    //   setError(err);
+    // }
     try {
       throw new Error("Forced error for testing");
     } catch (error) {
