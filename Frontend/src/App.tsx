@@ -29,8 +29,9 @@ import {
 } from "@/components/ui/popover";
 import { Textarea } from "./components/ui/textarea";
 import { useEffect, useRef, useState } from "react";
-import { Toast } from "./components/ui/toast";
+
 import { ToastSimple } from "./components/Toast";
+import { useToast } from "./components/ui/use-toast";
 
 const frameworks = [
   {
@@ -88,6 +89,8 @@ const FormSchema = z.object({
 });
 
 const App = () => {
+  const { toast } = useToast();
+
   const [loading, setLoading] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [fetcher, setFetcher] = useState<any>();
@@ -172,27 +175,29 @@ const App = () => {
   }, [chat]);
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    // setFormloading(true);
-    // const res = await fetch("http://localhost:3000/generate", {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify({ genre: data.genre, userdata: data.userdata }),
-    // }).then((response) => response.json());
-    // try {
-    // const sender = JSON.parse(res.server);
-    // sender.genre = data.genre;
-    // setFetcher(sender);
-    // setFormloading(false);
-
-    // } catch (err) {
-    //   setError(err);
-    // }
+    setFormloading(true);
+    const res = await fetch("http://localhost:3000/generate", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ genre: data.genre, userdata: data.userdata }),
+    }).then((response) => response.json());
+    try {
+      const sender = JSON.parse(res.server);
+      sender.genre = data.genre;
+      setFetcher(sender);
+      setFormloading(false);
+    } catch (err) {
+      setError(err);
+    }
     try {
       throw new Error("Forced error for testing");
     } catch (error) {
-      setError_parser(error);
+      console.log("error");
+      toast({
+        description: "Your message has been sent.",
+      });
     }
   }
 
@@ -344,12 +349,12 @@ const App = () => {
                             ref={editref}
                           />
                           <div className="flex justify-end">
-                            <button
+                            <Button
                               className="text-white bg-black pt-1 pb-2 px-4 text-base rounded-lg flex items-center justify-center"
                               onClick={handleReimagine}
                             >
                               Reimagine
-                            </button>
+                            </Button>
                           </div>
                         </div>
                       )}
