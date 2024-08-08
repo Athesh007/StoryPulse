@@ -29,6 +29,8 @@ import {
 } from "@/components/ui/popover";
 import { Textarea } from "./components/ui/textarea";
 import { useEffect, useRef, useState } from "react";
+import { Toast } from "./components/ui/toast";
+import { ToastSimple } from "./components/Toast";
 
 const frameworks = [
   {
@@ -96,6 +98,7 @@ const App = () => {
   const [selectedstate, setSelectedstate] = useState(false);
   const [dummy, setDummy] = useState("");
   const editref = useRef(null);
+  const [error_parse, setError_parser] = useState(null);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
@@ -162,29 +165,41 @@ const App = () => {
     const newarr = [...chat];
     newarr[chat.length - 1] = tester;
     setChat(newarr);
+    setSelectedstate(false);
   };
   useEffect(() => {
     console.log(chat, "from use Effect");
   }, [chat]);
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    setFormloading(true);
-    const res = await fetch("http://localhost:3000/generate", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ genre: data.genre, userdata: data.userdata }),
-    }).then((response) => response.json());
-    const sender = JSON.parse(res.server);
-    sender.genre = data.genre;
-    setFetcher(sender);
-    setFormloading(false);
+    // setFormloading(true);
+    // const res = await fetch("http://localhost:3000/generate", {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   body: JSON.stringify({ genre: data.genre, userdata: data.userdata }),
+    // }).then((response) => response.json());
+    // try {
+    // const sender = JSON.parse(res.server);
+    // sender.genre = data.genre;
+    // setFetcher(sender);
+    // setFormloading(false);
+
+    // } catch (err) {
+    //   setError(err);
+    // }
+    try {
+      throw new Error("Forced error for testing");
+    } catch (error) {
+      setError_parser(error);
+    }
   }
 
   return (
     <div className="w-full font-sans border-2 border-black min-h-screen flex flex-col items-center">
       <Navbar />
+      {error_parse && <ToastSimple />}
       <div className="w-full flex items-center justify-center pt-10">
         {!fetcher ? (
           <div className="rounded-lg w-[40rem]">

@@ -59,11 +59,10 @@ app.post("/generate", async (req, res) => {
       Always follow the below format during output without markdown format
       {
         story:"Rewrite the following story section while maintaining the overall plot, character development, and tone of the original story:${req.body.last_chat}.
-      Replace the ${req.body.need_change} with the specific part you want to change.
-      Include the following elements in the revised section: ${req.body.input}."
+        Replace the ${req.body.need_change} with the specific part you want to change.
+        Include the following elements in the revised section: ${req.body.input}."
       }
-      genre is: ${req.body.genre} stories.
-      `;
+      genre is: ${req.body.genre} stories.`;
 
     const result_test = await model.generateContent(prompt_1);
     const test_res = await result_test.response;
