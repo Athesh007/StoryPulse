@@ -102,6 +102,8 @@ const App = () => {
   const [dummy, setDummy] = useState("");
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const editref = useRef<any>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const printref = useRef<any>(null);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
@@ -241,7 +243,7 @@ const App = () => {
 
   return (
     <div className="w-full font-sans border-2 border-black min-h-screen flex flex-col items-center">
-      <Navbar />
+      <Navbar downloadref={printref} />
       <div className="w-full flex items-center justify-center lg:pt-10">
         {!fetcher ? (
           <div className="rounded-lg w-[40rem]">
@@ -366,7 +368,10 @@ const App = () => {
               {chat.length === 0 ? (
                 <div></div>
               ) : (
-                <div className="lg:w-[70%] w-[90%] md:w-[70%] p-4 lg:py-4 lg:px-0 mx-auto  flex flex-col border border-neutral-500 rounded-xl shadow-xl">
+                <div
+                  ref={printref}
+                  className="lg:w-[70%] w-[90%] md:w-[70%] p-4 lg:py-4 lg:px-0 mx-auto  flex flex-col border border-neutral-500 rounded-xl shadow-xl"
+                >
                   {chat.map((solo_data, index) => (
                     <div
                       key={index}
