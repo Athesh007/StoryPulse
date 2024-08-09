@@ -109,6 +109,7 @@ const App = () => {
     const to_insert =
       choice === 0 ? { story: fetcher.story1 } : { story: fetcher.story2 };
     to_insert.title = fetcher.title;
+    to_insert.genre = fetcher.genre;
     setChat((prev) => [...prev, to_insert]);
     setFetcher("data");
   };
@@ -159,7 +160,8 @@ const App = () => {
     setLoading(false);
   };
 
-  const handleReimagine = async (event) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleReimagine = async (event: any) => {
     event?.preventDefault();
     setFormloading(true);
     const response = await fetch("http://localhost:3000/generate", {
