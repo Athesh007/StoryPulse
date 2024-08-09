@@ -7,13 +7,6 @@ import { toast } from "./ui/use-toast";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const Navbar = ({ downloadref }: any) => {
   const handleDownloadPdf = async () => {
-    if (downloadref.current === null) {
-      toast({
-        title: "Cannot Download!",
-        description: "Please Generate and select story to download",
-      });
-      return;
-    }
     if (!downloadref) {
       toast({
         title: "Cannot Download!",
@@ -21,6 +14,14 @@ const Navbar = ({ downloadref }: any) => {
       });
       return;
     }
+    if (downloadref.current === null) {
+      toast({
+        title: "Cannot Download!",
+        description: "Please Generate and select story to download",
+      });
+      return;
+    }
+
     const element = downloadref.current;
     const canvas = await html2canvas(element);
     const data = canvas.toDataURL("image/png");
@@ -47,7 +48,7 @@ const Navbar = ({ downloadref }: any) => {
           to={"/"}
           className="p-2 text-base hover:bg-neutral-800 cursor-pointer rounded-xl flex items-center justify-center bg-black text-white"
         >
-          Homepage
+          Generate
         </Link>
       </div>
       <Button

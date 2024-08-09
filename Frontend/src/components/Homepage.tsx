@@ -11,7 +11,6 @@ const Homepage = () => {
         (res) => res.json()
       );
       setStories(response);
-      console.log(response);
     };
     res();
   }, []);

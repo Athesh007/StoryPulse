@@ -109,7 +109,6 @@ app.post("/generate", async (req, res) => {
         7,
         structuredOutputRes.length - 4
       );
-    // console.log(structuredOutputRes);
     const error_check = "Cannot process";
     if (structuredOutputRes.includes(error_check)) {
       throw new Error("harmful");
