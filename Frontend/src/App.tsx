@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Navbar from "./components/Navbar";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Check, ChevronsUpDown } from "lucide-react";
@@ -90,7 +91,6 @@ const App = () => {
   const { toast } = useToast();
 
   const [loading, setLoading] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [fetcher, setFetcher] = useState<any>();
   const [formloading, setFormloading] = useState(false);
   const [chat, setChat] = useState<
@@ -100,15 +100,12 @@ const App = () => {
   const [highlighted, setHighlighted] = useState<string | undefined>("");
   const [selectedstate, setSelectedstate] = useState(false);
   const [dummy, setDummy] = useState("");
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const editref = useRef<any>(null);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const printref = useRef<any>(null);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleClick = async (event: any, choice: number) => {
     event?.preventDefault();
     const to_insert: { story: string; title: string; genre: string } =
@@ -127,7 +124,6 @@ const App = () => {
     setFetcher("data");
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const Continue_generation = async (event: any, choice: number) => {
     event.preventDefault();
 
@@ -181,7 +177,6 @@ const App = () => {
     setLoading(false);
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleReimagine = async (event: any) => {
     event?.preventDefault();
     setFormloading(true);

@@ -2,10 +2,25 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
+import { toast } from "./ui/use-toast";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const Navbar = ({ downloadref }: any) => {
   const handleDownloadPdf = async () => {
+    if (downloadref.current === null) {
+      toast({
+        title: "Cannot Download!",
+        description: "Please Generate and select story to download",
+      });
+      return;
+    }
+    if (!downloadref) {
+      toast({
+        title: "Cannot Download!",
+        description: "Please select a story to download",
+      });
+      return;
+    }
     const element = downloadref.current;
     const canvas = await html2canvas(element);
     const data = canvas.toDataURL("image/png");
