@@ -25,9 +25,16 @@ const Homepage = () => {
         </div>
         {stories.length !== 0 && (
           <div className="grid grid-cols-3 gap-14 w-[80%]">
-            {stories.map((solo_data: { chat: [] }, index: number) => (
-              <Mapper solo_data={solo_data} key={index} />
-            ))}
+            {stories.map(
+              (
+                solo_data: {
+                  chat: [{ title: string; genre: string; story: string }];
+                },
+                index: number
+              ) => (
+                <Mapper solo_data={solo_data} key={index} />
+              )
+            )}
           </div>
         )}
       </div>

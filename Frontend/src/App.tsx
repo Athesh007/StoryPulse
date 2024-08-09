@@ -93,12 +93,15 @@ const App = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [fetcher, setFetcher] = useState<any>();
   const [formloading, setFormloading] = useState(false);
-  const [chat, setChat] = useState<{ story: string }[]>([]);
+  const [chat, setChat] = useState<
+    { story: string; title: string; genre: string }[]
+  >([]);
   const [continue_btn, setContinue_btn] = useState(true);
-  const [highlighted, setHighlighted] = useState<string>("");
+  const [highlighted, setHighlighted] = useState<string | undefined>("");
   const [selectedstate, setSelectedstate] = useState(false);
   const [dummy, setDummy] = useState("");
-  const editref = useRef(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const editref = useRef<any>(null);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
@@ -106,10 +109,18 @@ const App = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleClick = async (event: any, choice: number) => {
     event?.preventDefault();
-    const to_insert =
-      choice === 0 ? { story: fetcher.story1 } : { story: fetcher.story2 };
-    to_insert.title = fetcher.title;
-    to_insert.genre = fetcher.genre;
+    const to_insert: { story: string; title: string; genre: string } =
+      choice === 0
+        ? {
+            story: fetcher.story1,
+            title: fetcher.title,
+            genre: fetcher.genre,
+          }
+        : {
+            story: fetcher.story2,
+            title: fetcher.title,
+            genre: fetcher.genre,
+          };
     setChat((prev) => [...prev, to_insert]);
     setFetcher("data");
   };
@@ -129,9 +140,17 @@ const App = () => {
           data: chat,
         }),
       }).then((resp) => resp.json());
-
-      if (response.id) {
-        console.log("Story Saved successfully ");
+      console.log(response);
+      if (response._key) {
+        toast({
+          title: "Your story has been saved!",
+          description: "You can view your message in gallery",
+        });
+      } else {
+        toast({
+          title: "Uh oh! Something went wrong.",
+          description: "Please try again.",
+        });
       }
       return;
     }
@@ -173,7 +192,7 @@ const App = () => {
         last_chat: chat[chat.length - 1].story,
         need_change: dummy,
         genre: fetcher.genre,
-        input: editref.current.value,
+        input: editref.current?.value,
       }),
     }).then((res) => res.json());
     const tester = JSON.parse(response.server);
@@ -190,19 +209,28 @@ const App = () => {
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     setFormloading(true);
-    const res = await fetch("http://localhost:3000/generate", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ genre: data.genre, userdata: data.userdata }),
-    }).then((response) => response.json());
     try {
+      const res = await fetch("http://localhost:3000/generate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ genre: data.genre, userdata: data.userdata }),
+      }).then((response) => response.json());
+      console.log(res);
+      if (res.server === "Harmful") {
+        toast({
+          title: "Uh oh! Harmfull content detected",
+          description: "Please do not  genrate any harmful content",
+        });
+        setFormloading(false);
+        return;
+      }
       const sender = await JSON.parse(res.server);
       sender.genre = data.genre;
-      console.log(sender);
       setFetcher(sender);
     } catch (err) {
+      console.log(err);
       toast({
         title: "Uh oh! Something went wrong.",
         description: "Please try again.",
@@ -345,8 +373,9 @@ const App = () => {
                       className="text-xl relative"
                       onMouseUp={() => {
                         setSelectedstate(true);
+
                         setHighlighted(window.getSelection()?.toString());
-                        if (highlighted !== "") {
+                        if (highlighted) {
                           setDummy(highlighted);
                         }
                       }}

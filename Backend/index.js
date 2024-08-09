@@ -2,8 +2,9 @@ import "dotenv/config";
 import cors from "cors";
 import express from "express";
 import { db } from "./firebase/index.js";
-import { addDoc, collection, getDocs } from "firebase/firestore";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { addDoc, collection, getDocs } from "firebase/firestore";
+import { HarmBlockThreshold, HarmCategory } from "@google/generative-ai";
 
 const app = express();
 app.use(cors());
@@ -14,7 +15,6 @@ app.post("/save-story", async (req, res) => {
     const docRef = await addDoc(collection(db, "stories"), {
       chat: req.body.data,
     });
-    console.log("Document written with ID: ", docRef.id);
     return res.send(docRef);
   } catch (e) {
     console.error("Error adding document: ", e);
@@ -31,13 +31,32 @@ app.get("/get-story", async (req, res) => {
   res.send(arr);
 });
 
+//safety-Rules
+const safetySettings = [
+  {
+    category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+    threshold: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
+  },
+  {
+    category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+    threshold: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
+  },
+  {
+    category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+    threshold: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
+  },
+];
+
 // Define your model
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+const model = genAI.getGenerativeModel({
+  model: "gemini-1.5-flash",
+  safetySettings,
+});
 
 //test api
 app.post("/generate", async (req, res) => {
-  //for selected story
+  // for selected story
   if (req.body.selected_story) {
     const prompt_1 = `Generate two stories in below format
       Always follow the below format during output as a markdown format with proper paragraph spacing.
@@ -54,6 +73,7 @@ app.post("/generate", async (req, res) => {
     return res.status(200).json({ server: resp });
   }
 
+  //reimagining the story
   if (req.body.last_chat) {
     const prompt_1 = `Generate story in below format
       Always follow the below format during output without markdown format
@@ -71,30 +91,35 @@ app.post("/generate", async (req, res) => {
     return res.status(200).json({ server: resp });
   }
 
-  const prompt = `Generate two stories in below format as a markdown format with proper paragraph spacing. 
+  const prompt = `Generate two stories in below format as a markdown format with proper paragraph spacing.
       {
         story1:"The first story with atleast 7 lines",
         story2:"The Second story with atleast 7 lines"
         title:"Title for the story",
       }
       genre is: ${req.body.genre} stories.
-      Create two original stories with the context ${req.body.userdata}`;
-
-  const result = await model.generateContent(prompt);
-  const response = await result.response;
-  let structuredOutputRes = response.text();
-  if (structuredOutputRes.startsWith("`"))
-    structuredOutputRes = structuredOutputRes.slice(
-      7,
-      structuredOutputRes.length - 4
-    );
-  res.status(200).json({ server: structuredOutputRes });
+      Create two original stories with the context ${req.body.userdata}
+      If the input is something harmful just give {error:"Cannot process"} and nothing else`;
+  try {
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    let structuredOutputRes = response.text();
+    if (structuredOutputRes.startsWith("`"))
+      structuredOutputRes = structuredOutputRes.slice(
+        7,
+        structuredOutputRes.length - 4
+      );
+    // console.log(structuredOutputRes);
+    const error_check = "Cannot process";
+    if (structuredOutputRes.includes(error_check)) {
+      throw new Error("harmful");
+    }
+    res.status(200).json({ server: structuredOutputRes });
+  } catch (error) {
+    res.status(400).json({ server: "Harmful" });
+  }
 });
 
-app.post("/test", (req, res) => {
-  console.log(req.body);
-  res.status(200).json({ message: "Ok" });
-});
 app.listen(3000, () => {
   console.log(`Listening on port 3000`);
 });
