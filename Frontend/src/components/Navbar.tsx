@@ -19,7 +19,7 @@ const Navbar = () => {
           Homepage
         </Link>
       </div>
-      <Button className="bg-slate-900 text-white hover:bg-neutral-700  ">
+      <Button className="bg-slate-900 text-white hover:bg-neutral-700 hidden lg:flex">
         Export as PDF
       </Button>
     </div>

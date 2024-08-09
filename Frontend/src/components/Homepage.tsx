@@ -24,7 +24,7 @@ const Homepage = () => {
           Story Gallery
         </div>
         {stories.length !== 0 && (
-          <div className="grid grid-cols-3 gap-14 w-[80%]">
+          <div className="grid grid-cols-1 md:grid-cols-2 md:w-[80%] lg:grid-cols-3 gap-6 md:gap-14 lg:gap-14 lg:w-[80%]">
             {stories.map(
               (
                 solo_data: {

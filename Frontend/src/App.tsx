@@ -242,7 +242,7 @@ const App = () => {
   return (
     <div className="w-full font-sans border-2 border-black min-h-screen flex flex-col items-center">
       <Navbar />
-      <div className="w-full flex items-center justify-center pt-10">
+      <div className="w-full flex items-center justify-center lg:pt-10">
         {!fetcher ? (
           <div className="rounded-lg w-[40rem]">
             <Form {...form}>
@@ -361,12 +361,12 @@ const App = () => {
             </Form>
           </div>
         ) : (
-          <div>
+          <div className="w-full pt-6 lg:pt-0 md:pt-0">
             <div>
               {chat.length === 0 ? (
                 <div></div>
               ) : (
-                <div className="w-[70%] mx-auto py-4 flex flex-col border border-neutral-500 rounded-xl shadow-xl">
+                <div className="lg:w-[70%] w-[90%] md:w-[70%] p-4 lg:py-4 lg:px-0 mx-auto  flex flex-col border border-neutral-500 rounded-xl shadow-xl">
                   {chat.map((solo_data, index) => (
                     <div
                       key={index}
@@ -411,7 +411,7 @@ const App = () => {
                           </div>
                         </div>
                       )}
-                      <ReactMarkdown className="px-6 py-2">
+                      <ReactMarkdown className="lg:px-6 py-2">
                         {solo_data.story}
                       </ReactMarkdown>
                     </div>
@@ -419,15 +419,15 @@ const App = () => {
                 </div>
               )}
             </div>
-            <div className="flex flex-col gap-6 w-[70%] mx-auto pt-10">
+            <div className="flex flex-col gap-6 lg:w-[70%] md:[70%] w-[90%] mx-auto lg:pt-10 pt-6 md:pt-10">
               {loading ? (
-                <div>
-                  <div className="text-xl flex justify-between gap-8 animate-pulse">
-                    <div className="p-4 border rounded-lg border-neutral-500 w-full h-[25rem] flex items-center justify-center ">
+                <div className="w-full">
+                  <div className="text-xl flex flex-col lg:flex-row md:flex-row w-full justify-between gap-8 animate-pulse">
+                    <div className="p-4 border rounded-lg border-neutral-500 w-full lg:h-[25rem] md:h-[25rem] h-[15rem] flex items-center justify-center">
                       Please Wait...
                     </div>
 
-                    <div className="p-4 border rounded-lg border-neutral-500 w-full h-[25rem] flex items-center justify-center">
+                    <div className="p-4 border rounded-lg border-neutral-500 w-full lg:h-[25rem] md:h-[25rem] h-[15rem] flex items-center justify-center">
                       Please Wait...
                     </div>
                   </div>
@@ -436,10 +436,10 @@ const App = () => {
                 <div></div>
               ) : (
                 <div>
-                  <div className="w-full flex items-center justify-center text-xl p-4 pb-10 font-semibold font-sans">
+                  <div className="w-full flex items-center justify-center text-xl p-4 pb-4 lg:pb-10 font-semibold font-sans">
                     Please select any one of the below stories to continue
                   </div>
-                  <div className="text-xl flex justify-between gap-8">
+                  <div className="text-xl flex justify-between gap-8 flex-col lg:flex-row">
                     <div
                       className="text-justify cursor-pointer"
                       onClick={(e) => handleClick(e, 0)}
@@ -460,7 +460,7 @@ const App = () => {
                 </div>
               )}
               {!loading && continue_btn && (
-                <div className="p-6 gap-20 flex items-center justify-center w-[90%]">
+                <div className="pb-6 lg:gap-20 gap-8 flex items-center justify-center lg:w-[90%] md:w-[90%]">
                   <button
                     className="p-2 px-4 boredr border-neutral-500 bg-neutral-900 rounded-lg text-white text-lg"
                     onClick={(e) => Continue_generation(e, 0)}

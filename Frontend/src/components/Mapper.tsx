@@ -16,9 +16,8 @@ const Mapper = ({
           {solo_data.chat[0].title}
         </div>
         <div className="font-semibold">
-          Genre{" "}
+          Genre
           <div className="text-xl">
-            {" "}
             {solo_data.chat[0].genre.slice(0, 1).toUpperCase() +
               solo_data.chat[0].genre.slice(1)}
           </div>

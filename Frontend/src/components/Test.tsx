@@ -7,7 +7,7 @@ const Test = () => {
   return (
     <div>
       <Navbar />
-      <div className="w-[70%] font-sans mx-auto items-center justify-center flex flex-col pt-10">
+      <div className="lg:w-[70%] w-[90%] md:w-[70%] font-sans mx-auto items-center justify-center flex flex-col lg:py-10 py-6">
         <div className="text-2xl font-semibold p-4">{item.title}</div>
         <div className="p-4 font-semibold text-xl">
           Genre: {item.genre.slice(0, 1).toUpperCase() + item.genre.slice(1)}
