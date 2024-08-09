@@ -70,10 +70,12 @@ app.post("/generate", async (req, res) => {
     if (resp.startsWith("`")) resp = resp.slice(7, resp.length - 4);
     return res.status(200).json({ server: resp });
   }
+
   const prompt = `Generate two stories in below format as a markdown format with proper paragraph spacing. 
       {
         story1:"The first story with atleast 7 lines",
         story2:"The Second story with atleast 7 lines"
+        title:"Title for the story",
       }
       genre is: ${req.body.genre} stories.
       Create two original stories with the context ${req.body.userdata}`;

@@ -29,8 +29,6 @@ import {
 } from "@/components/ui/popover";
 import { Textarea } from "./components/ui/textarea";
 import { useEffect, useRef, useState } from "react";
-
-import { ToastSimple } from "./components/Toast";
 import { useToast } from "./components/ui/use-toast";
 
 const frameworks = [
@@ -101,7 +99,6 @@ const App = () => {
   const [selectedstate, setSelectedstate] = useState(false);
   const [dummy, setDummy] = useState("");
   const editref = useRef(null);
-  const [error_parse, setError_parser] = useState(null);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
@@ -111,6 +108,7 @@ const App = () => {
     event?.preventDefault();
     const to_insert =
       choice === 0 ? { story: fetcher.story1 } : { story: fetcher.story2 };
+    to_insert.title = fetcher.title;
     setChat((prev) => [...prev, to_insert]);
     setFetcher("data");
   };
@@ -118,6 +116,7 @@ const App = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const Continue_generation = async (event: any, choice: number) => {
     event.preventDefault();
+
     if (choice === 1) {
       setContinue_btn(false);
       const response = await fetch("http://localhost:3000/save-story", {
@@ -129,9 +128,13 @@ const App = () => {
           data: chat,
         }),
       }).then((resp) => resp.json());
-      console.log(response);
+
+      if (response.id) {
+        console.log("Story Saved successfully ");
+      }
       return;
     }
+
     setLoading(true);
     //fetch new data
     const response = await fetch("http://localhost:3000/generate", {
@@ -144,12 +147,21 @@ const App = () => {
         selected_story: chat[chat.length - 1].story,
       }),
     }).then((resp) => resp.json());
-    const tester = JSON.parse(response.server);
-    setFetcher(tester);
+    try {
+      const tester = JSON.parse(response.server);
+      setFetcher(tester);
+    } catch (error) {
+      toast({
+        title: "Uh oh! Something went wrong.",
+        description: "Please try again.",
+      });
+    }
     setLoading(false);
   };
 
-  const handleReimagine = async () => {
+  const handleReimagine = async (event) => {
+    event?.preventDefault();
+    setFormloading(true);
     const response = await fetch("http://localhost:3000/generate", {
       method: "POST",
       headers: {
@@ -163,48 +175,43 @@ const App = () => {
       }),
     }).then((res) => res.json());
     const tester = JSON.parse(response.server);
-    console.log(tester.story);
-    console.log(chat[chat.length - 1].story);
     const newarr = [...chat];
     newarr[chat.length - 1] = tester;
     setChat(newarr);
     setSelectedstate(false);
+    setFormloading(false);
   };
+
   useEffect(() => {
     console.log(chat, "from use Effect");
   }, [chat]);
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    // setFormloading(true);
-    // const res = await fetch("http://localhost:3000/generate", {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify({ genre: data.genre, userdata: data.userdata }),
-    // }).then((response) => response.json());
-    // try {
-    //   const sender = JSON.parse(res.server);
-    //   sender.genre = data.genre;
-    //   setFetcher(sender);
-    //   setFormloading(false);
-    // } catch (err) {
-    //   setError(err);
-    // }
+    setFormloading(true);
+    const res = await fetch("http://localhost:3000/generate", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ genre: data.genre, userdata: data.userdata }),
+    }).then((response) => response.json());
     try {
-      throw new Error("Forced error for testing");
-    } catch (error) {
-      console.log("error");
+      const sender = await JSON.parse(res.server);
+      sender.genre = data.genre;
+      console.log(sender);
+      setFetcher(sender);
+    } catch (err) {
       toast({
-        description: "Your message has been sent.",
+        title: "Uh oh! Something went wrong.",
+        description: "Please try again.",
       });
     }
+    setFormloading(false);
   }
 
   return (
     <div className="w-full font-sans border-2 border-black min-h-screen flex flex-col items-center">
       <Navbar />
-      {error_parse && <ToastSimple />}
       <div className="w-full flex items-center justify-center pt-10">
         {!fetcher ? (
           <div className="rounded-lg w-[40rem]">
@@ -342,6 +349,12 @@ const App = () => {
                         }
                       }}
                     >
+                      {index === 0 && (
+                        <div className="w-full pb-4 items-center justify-center flex font-semibold text-3xl">
+                          {solo_data.title}
+                        </div>
+                      )}
+
                       {selectedstate && (
                         <div className="w-[95%] mx-auto p-2 border border-neutral-500 rounded-xl text-white">
                           <textarea
@@ -349,12 +362,21 @@ const App = () => {
                             ref={editref}
                           />
                           <div className="flex justify-end">
-                            <Button
-                              className="text-white bg-black pt-1 pb-2 px-4 text-base rounded-lg flex items-center justify-center"
-                              onClick={handleReimagine}
-                            >
-                              Reimagine
-                            </Button>
+                            {formloading === true ? (
+                              <button
+                                className="flex animate-pulse border border-neutral-500 px-4 p-2 rounded-lg bg-neutral-100 text-neutral-600 cursor-not-allowed"
+                                disabled
+                              >
+                                Please wait...
+                              </button>
+                            ) : (
+                              <button
+                                className="text-white bg-black pt-1 pb-2 px-4 text-base rounded-lg flex items-center justify-center"
+                                onClick={handleReimagine}
+                              >
+                                ReImagine
+                              </button>
+                            )}
                           </div>
                         </div>
                       )}
@@ -419,7 +441,7 @@ const App = () => {
                     className="p-2 px-4 boredr border-neutral-500 bg-neutral-900 rounded-lg text-white text-lg"
                     onClick={(e) => Continue_generation(e, 1)}
                   >
-                    End Story
+                    Save Story
                   </button>
                 </div>
               )}
