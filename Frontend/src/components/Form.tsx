@@ -86,10 +86,10 @@ const FormSchema = z.object({
 
 const Form_Generate = ({ setFormloading, setFetcher, formloading }: any) => {
   const { toast } = useToast();
-
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
+
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     setFormloading(true);
     try {
