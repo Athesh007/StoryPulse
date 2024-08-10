@@ -36,15 +36,18 @@ const Generation = ({
 
     if (choice === 1) {
       setContinue_btn(false);
-      const response = await fetch("http://localhost:3000/save-story", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          data: chat,
-        }),
-      }).then((resp) => resp.json());
+      const response = await fetch(
+        "https://story-pulse.vercel.app/save-story",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            data: chat,
+          }),
+        }
+      ).then((resp) => resp.json());
       if (response._key) {
         toast({
           title: "Your story has been saved!",
@@ -61,7 +64,7 @@ const Generation = ({
 
     setLoading(true);
     //fetch new data
-    const response = await fetch("http://localhost:3000/generate", {
+    const response = await fetch("https://story-pulse.vercel.app/generate", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

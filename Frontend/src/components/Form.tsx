@@ -93,7 +93,7 @@ const Form_Generate = ({ setFormloading, setFetcher, formloading }: any) => {
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     setFormloading(true);
     try {
-      const res = await fetch("http://localhost:3000/generate", {
+      const res = await fetch("https://story-pulse.vercel.app/generate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -19,7 +19,7 @@ const DisplayComponent = ({
   const handleReimagine = async (event: any) => {
     event?.preventDefault();
     setFormloading(true);
-    const response = await fetch("http://localhost:3000/generate", {
+    const response = await fetch("https://story-pulse.vercel.app/generate", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
