@@ -20,7 +20,7 @@ const App = () => {
   const printref = useRef<any>(null);
 
   return (
-    <div className="w-full font-sans border-2 border-black min-h-screen flex flex-col items-center">
+    <div className="w-full font-sans min-h-screen flex flex-col items-center">
       <Navbar downloadref={printref} />
       <div className="w-full flex items-center justify-center lg:pt-10">
         {!fetcher ? (

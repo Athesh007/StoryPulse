@@ -9,7 +9,7 @@ const Mapper = ({
   return (
     <div>
       <div
-        className="border border-neutral-500 shadow-xl rounded-lg h-[12rem] p-6 cursor-pointer flex flex-col justify-between"
+        className="border border-neutral-500 shadow-xl rounded-lg lg:h-[15rem] h-[12rem] p-6 cursor-pointer flex flex-col justify-between"
         onClick={() => navigate("/test", { state: solo_data.chat[0] })}
       >
         <div className="text-3xl font-semibold font-sans">
