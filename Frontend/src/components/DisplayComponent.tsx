@@ -19,18 +19,21 @@ const DisplayComponent = ({
   const handleReimagine = async (event: any) => {
     event?.preventDefault();
     setFormloading(true);
-    const response = await fetch("https://story-pulse.vercel.app/generate", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        last_chat: chat[chat.length - 1].story,
-        need_change: dummy,
-        genre: fetcher.genre,
-        input: editref.current?.value,
-      }),
-    }).then((res) => res.json());
+    const response = await fetch(
+      "https://story-pulse-backend.vercel.app/generate",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          last_chat: chat[chat.length - 1].story,
+          need_change: dummy,
+          genre: fetcher.genre,
+          input: editref.current?.value,
+        }),
+      }
+    ).then((res) => res.json());
     const tester = JSON.parse(response.server);
     const newarr = [...chat];
     newarr[chat.length - 1] = tester;

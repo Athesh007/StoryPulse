@@ -8,7 +8,7 @@ const Homepage = () => {
   useEffect(() => {
     const res = async () => {
       const response = await fetch(
-        "https://story-pulse.vercel.app/get-story"
+        "https://story-pulse-backend.vercel.app/get-story"
       ).then((res) => res.json());
       setStories(response);
     };

@@ -37,7 +37,7 @@ const Generation = ({
     if (choice === 1) {
       setContinue_btn(false);
       const response = await fetch(
-        "https://story-pulse.vercel.app/save-story",
+        "https://story-pulse-backend.vercel.app/save-story",
         {
           method: "POST",
           headers: {
@@ -64,16 +64,19 @@ const Generation = ({
 
     setLoading(true);
     //fetch new data
-    const response = await fetch("https://story-pulse.vercel.app/generate", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        genre: fetcher.genre,
-        selected_story: chat[chat.length - 1].story,
-      }),
-    }).then((resp) => resp.json());
+    const response = await fetch(
+      "https://story-pulse-backend.vercel.app/generate",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          genre: fetcher.genre,
+          selected_story: chat[chat.length - 1].story,
+        }),
+      }
+    ).then((resp) => resp.json());
     try {
       const tester = JSON.parse(response.server);
       setFetcher(tester);

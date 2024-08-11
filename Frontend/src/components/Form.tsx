@@ -93,13 +93,16 @@ const Form_Generate = ({ setFormloading, setFetcher, formloading }: any) => {
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     setFormloading(true);
     try {
-      const res = await fetch("https://story-pulse.vercel.app/generate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ genre: data.genre, userdata: data.userdata }),
-      }).then((response) => response.json());
+      const res = await fetch(
+        "hhttps://story-pulse-backend.vercel.app/generate",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ genre: data.genre, userdata: data.userdata }),
+        }
+      ).then((response) => response.json());
       if (res.server === "Harmful") {
         toast({
           title: "Uh oh! Harmfull content detected",
