@@ -1,4 +1,4 @@
-# **Story Pulse:open_book:**
+# **Story Pulse :book:**
 
 Generate captivating stories with just a few clicks! Our Web app leverages the power of the Gemini API to create unique and engaging narratives based on your prompts.
 
