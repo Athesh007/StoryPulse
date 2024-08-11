@@ -35,7 +35,7 @@ const Navbar = ({ downloadref }: any) => {
     pdf.save("print.pdf");
   };
   return (
-    <div className="flex border-2 border-red-400 w-full p-4 px-8 justify-between items-center">
+    <div className="flex border-b border-neutral-400 w-full p-4 px-8 justify-between items-center">
       <div className="text-2xl font-semibold">Story Pulse</div>
       <div className="flex gap-4 text-xl font-semibold">
         <Link
