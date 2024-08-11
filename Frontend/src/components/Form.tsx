@@ -94,7 +94,7 @@ const Form_Generate = ({ setFormloading, setFetcher, formloading }: any) => {
     setFormloading(true);
     try {
       const res = await fetch(
-        "hhttps://story-pulse-backend.vercel.app/generate",
+        "https://story-pulse-backend.vercel.app/generate",
         {
           method: "POST",
           headers: {
