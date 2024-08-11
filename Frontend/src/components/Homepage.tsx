@@ -13,6 +13,7 @@ const Homepage = () => {
       setStories(response);
     };
     res();
+    console.log(stories);
   }, []);
 
   return (

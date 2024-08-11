@@ -1,30 +1,63 @@
-# React + TypeScript + Vite
+# **Story Pulse:open_book:**
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Generate captivating stories with just a few clicks! Our Web app leverages the power of the Gemini API to create unique and engaging narratives based on your prompts.
 
-Currently, two official plugins are available:
+### **Installation**
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Please ensure that you have Node.js(22.2.0 or above) installed on your machine.
 
-## Expanding the ESLint configuration
+**Steps to install**
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+Clone this repository
 
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json', './tsconfig.app.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
+```
+    https://github.com/Athesh007/StoryPulse.git
 ```
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+Install required packages
+
+```
+    cd frontend
+    npm install
+    cd.. && cd backend
+    npm install
+```
+
+Run the Project
+
+```
+    node index.js #make sure you are in backend folder
+    cd .. && cd frontend
+    npm run dev
+```
+
+### **Features:**
+
+- Generate stories based on various genres and themes
+- Make your choice from the generated stories
+- Save and share your favorite stories in a story gallery
+- Export your stories as PDF and read it anywhere
+- Edit your stories at any time
+
+### **How it works**
+
+Query the LLM for stories. Two stories will be generated. Choose one and continue with the story. You can also edit the story to drive towards your needs with the **Reimagine** feature.
+You can conclude the story and it will be stored in the story gallery.
+
+![Project Workflow](https://github.com/Anandprabhu530/Statistically-Speaking/blob/master/image.png)
+
+### **Tech Stack:**
+
+Frontend : React.js
+
+Backend : Node.js with Express
+
+Database : Firebase
+
+LLM : Gemini-1.5-flash
+
+### **Future Improvements**
+
+- [ ] Add Customizable profiles for the users based ont their generated stories.
+- [ ] Expand the range of genres supported by the app to cater to diverse user preferences.
+- [ ] Explore advanced storytelling techniques like plot twists, character arcs, and world-building to create more complex and engaging narratives.
